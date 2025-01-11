@@ -1,12 +1,12 @@
+require('dotenv').config();
+
 const AWS = require("aws-sdk");
 
-// Configure AWS SDK
 AWS.config.update({
-  accessKeyId: "AKIAWOOXUJBRAAO2X55B",
-  secretAccessKey: "83kzURMTq0GoLHJDl3GIFpX72S9rZkTK8mHGC64k",
-  region: "ap-south-1", // e.g., "us-east-1"
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
 });
-
 
 const express = require("express");
 const app = express();
