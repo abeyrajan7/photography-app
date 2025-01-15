@@ -1,0 +1,22 @@
+.header-bar {
+    height: 43px;
+    background-color: #480404;
+    position: fixed;
+    width: 100%;
+    top: 0%;
+}
+
+.site-title {
+    position: relative;
+    top: 25%;
+    left: 3%;
+    color: blanchedalmond;
+}
+
+.nav-items{
+    position: relative;
+    display: inline-flex;
+    gap: 32%;
+    bottom: 25%;
+    left: 76%;
+}

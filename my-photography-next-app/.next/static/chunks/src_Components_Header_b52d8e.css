@@ -1,0 +1,25 @@
+/* [project]/src/Components/Header.css [app-client] (css) */
+.header-bar {
+  height: 43px;
+  background-color: #480404;
+  position: fixed;
+  width: 100%;
+  top: 0%;
+}
+
+.site-title {
+  position: relative;
+  top: 25%;
+  left: 3%;
+  color: #ffebcd;
+}
+
+.nav-items {
+  position: relative;
+  display: inline-flex;
+  gap: 32%;
+  bottom: 25%;
+  left: 76%;
+}
+
+/*# sourceMappingURL=src_Components_Header_b52d8e.css.map*/
