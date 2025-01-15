@@ -1,0 +1,262 @@
+/* [project]/src/app/gallery/page.css [app-client] (css) */
+.photo {
+  position: relative;
+  overflow: hidden;
+  margin: 10px;
+  max-width: 300px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  width: calc(25% - 10px);
+  box-sizing: border-box;
+}
+
+.hover-effect {
+  font-family: Montserrat, Arial, sans-serif;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  text-align: left;
+  background: #000;
+}
+
+.hover-effect img {
+  width: 100%;
+  height: auto;
+  transition: all .4s;
+}
+
+.hover-effect figcaption {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 15px 20px;
+  background: #000000b3;
+  color: #fff;
+  width: 100%;
+  transform: translateY(100%);
+  transition: all .4s;
+}
+
+.hover-effect h3, .hover-effect h4 {
+  margin: 0;
+  opacity: 0;
+  transition: opacity .4s;
+}
+
+.hover-effect h3 {
+  font-size: 1.2em;
+}
+
+.hover-effect h4 {
+  font-size: .9em;
+  text-transform: uppercase;
+}
+
+.hover-effect:hover img {
+  opacity: .2;
+}
+
+.hover-effect:hover figcaption {
+  transform: translateY(0);
+}
+
+.hover-effect:hover h3, .hover-effect:hover h4 {
+  opacity: 1;
+}
+
+.interactions {
+  display: inline-flex;
+  gap: 10%;
+}
+
+.photo-gallery {
+  height: 10%;
+  gap: .5%;
+  margin-top: .5%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.display-modal img {
+  max-width: 75%;
+  max-height: 100%;
+  object-fit: contain;
+  border-right: 1px solid #ddd;
+}
+
+.display-modal {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px #0000004d;
+  z-index: 1001;
+  max-width: 90%;
+  max-height: 90%;
+  overflow: hidden;
+  background: #fff;
+}
+
+.display-modal.portrait {
+  margin-top: 1%;
+  max-width: 38%;
+  max-height: 100%;
+}
+
+.display-modal.landscape {
+  max-height: 100%;
+  max-width: 80%;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #00000080;
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.parent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.parent button {
+  background-color: #48abe0;
+  color: #fff;
+  border: none;
+  padding: 5px;
+  font-size: 31px;
+  height: 130px;
+  width: 130px;
+  box-shadow: 0 2px 4px #2f4f4f;
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.parent button:active {
+  background-color: #48abe0;
+  box-shadow: 0 0 2px #2f4f4f;
+  transform: translateY(2px);
+}
+
+.add-btn {
+  position: fixed;
+  bottom: 5%;
+  right: 3%;
+  border-radius: 50%;
+  background-color: #fff;
+  width: 60px;
+  height: 60px;
+  font-size: 36px;
+  box-shadow: 0 4px 6px #0000001a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #000;
+  cursor: pointer;
+  border: none;
+  overflow: hidden;
+  transition: all .2s ease-in-out;
+}
+
+.add-btn:before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background-color: #000;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all .2s ease-in-out;
+  z-index: -1;
+}
+
+.add-btn:hover:before {
+  width: 120%;
+  height: 120%;
+}
+
+.add-btn:hover {
+  color: #fff;
+  z-index: 1;
+}
+
+.interaction-section {
+  flex-shrink: 0;
+  width: 30%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  background: #fff;
+  color: #fff;
+  overflow-y: auto;
+  border-radius: 0 8px 8px 0;
+}
+
+.interaction-section h2 {
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+.interaction-section .comments p {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.delete-option {
+  bottom: -80%;
+  position: relative;
+  left: -6%;
+  cursor: pointer;
+  color: #000;
+}
+
+.delete-option :hover {
+  color: #9a3636;
+}
+
+.comment-text {
+  color: #000;
+  padding: 6%;
+  padding-left: 0%;
+  font-size: 93%;
+}
+
+.landscape-comment-text {
+  color: #000;
+  padding: 1%;
+  padding-left: 1%;
+  font-size: 90%;
+  position: relative;
+  left: -7%;
+}
+
+.interaction-section.portrait {
+  width: 30%;
+}
+
+.interaction-section.landscape {
+  width: 27%;
+}
+
+
+/*# sourceMappingURL=src_app_gallery_page_ddb4b6.css.map*/

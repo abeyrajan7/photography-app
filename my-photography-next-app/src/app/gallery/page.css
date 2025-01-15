@@ -1,0 +1,311 @@
+.photo {
+  position: relative;
+  overflow: hidden;
+  margin: 10px;
+  max-width: 300px; 
+  display:inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  width: calc(25% - 10px);
+  box-sizing: border-box;
+}
+
+.hover-effect {
+  font-family: "Montserrat", Arial, sans-serif;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  text-align: left;
+  background: #000;
+}
+
+
+.hover-effect img {
+  width: 100%;
+  height: auto;
+  transition: all 0.4s ease; /* Smooth transition for opacity */
+}
+
+.hover-effect figcaption {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 15px 20px;
+  background: rgba(0, 0, 0, 0.7); /* Dark background for text */
+  color: #fff;
+  width: 100%;
+  transform: translateY(100%); /* Initially hidden below the image */
+  transition: all 0.4s ease; /* Smooth transition for hover effect */
+}
+
+.hover-effect h3,
+.hover-effect h4 {
+  margin: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.hover-effect h3 {
+  font-size: 1.2em;
+}
+
+.hover-effect h4 {
+  font-size: 0.9em;
+  text-transform: uppercase;
+}
+
+.hover-effect:hover img {
+  opacity: 0.2; /* Fade the image */
+}
+
+.hover-effect:hover figcaption {
+  transform: translateY(0); /* Slide text overlay into view */
+}
+
+.hover-effect:hover h3,
+.hover-effect:hover h4 {
+  opacity: 1; /* Make text visible */
+}
+
+.interactions{
+  display: inline-flex;
+  gap: 10%;
+}
+
+
+  /* .photo img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+    object-fit: cover;
+  }
+
+  .photo img:hover {
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3); 
+  }
+
+  .photo img {
+    transition: box-shadow 0.3s ease, transform 0.3s ease; 
+  } */
+  
+
+.photo-gallery {
+    /* display: inline-flex; */
+    height: 10%;
+    gap: .5%;
+    margin-top: .5%;
+    display: flex;
+    flex-wrap: wrap; /* Wrap to the next row */
+    /* gap: 10px;  */
+    justify-content: center; /* Center the gallery */
+}
+.display-modal img {
+  max-width: 75%;
+  max-height: 100%; /* Maintain aspect ratio */
+  object-fit: contain; /* Ensure the image scales properly */
+  border-right: 1px solid #ddd; /* Optional: Separator between image and comments */
+}
+
+.display-modal {
+  display: flex; /* Align image and interaction section side by side */
+  justify-content: space-between;
+  align-items: stretch; /* Ensure both sections match height */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  max-width: 90%;
+  max-height: 90%;
+  overflow: hidden;
+  background: #fff;
+}
+
+
+
+  .display-modal.portrait {
+    margin-top: 1%;
+    max-width: 38%;
+    max-height: 100%; /* Adjust height for portrait */
+    /* margin-left: -15%;
+    margin-left: 0%; */
+  }
+
+  .display-modal.landscape {
+    max-height: 100%;
+    max-width: 80%;
+    /* margin-left: -15%; */
+  }
+
+
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dimmed background */
+    backdrop-filter: blur(10px); /* Blur effect */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .parent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .parent button {
+    background-color: #48abe0;
+    color: white;
+    border: none;
+    padding: 5px;
+    font-size: 31px;
+    height: 130px;
+    width: 130px;
+    box-shadow: 0 2px 4px darkslategray;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .parent button:active {
+    background-color: #48abe0;
+    box-shadow: 0 0 2px darkslategray;
+    transform: translateY(2px);
+  }
+
+  .add-btn {
+    position: fixed; /* Ensures the button remains in place during scroll */
+    bottom: 5%;
+    right: 3%;
+    border-radius: 50%; /* Makes the button round */
+    background-color: #ffffff; /* Button background color */
+    width: 60px; /* Button width */
+    height: 60px; /* Button height */
+    font-size: 36px; /* Adjusts font size for "+" */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Adds a shadow for depth */
+    display: flex; /* Centers the "+" symbol */
+    justify-content: center;
+    align-items: center;
+    color: #000; /* Initial icon color */
+    cursor: pointer; /* Changes the cursor to a pointer when hovering */
+    border: none; /* Removes any default border */
+    overflow: hidden; /* Ensures pseudo-element stays within the circle */
+    transition: all 0.2s ease-in-out; /* Smooth transition */
+}
+
+.add-btn::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background-color: black; /* Background color when hovering */
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0; /* Places it behind the icon */
+    transition: all 0.2s ease-in-out; /* Smooth transition */
+    z-index: -1;
+}
+
+.add-btn:hover::before {
+    width: 120%; /* Expands to cover the entire button */
+    height: 120%;
+}
+
+.add-btn:hover {
+    color: white; /* Changes the icon color to white */
+    z-index: 1; /* Ensures the "+" stays above the background */
+}
+
+  .interaction-section {
+    flex-shrink: 0; /* Prevent shrinking */
+    width: 30%; /* Set a suitable width for the comments section */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align content to the top */
+    align-items: flex-start;
+    background: #fff; /* Green background for contrast */
+    color: #fff;
+    overflow-y: auto; /* Enable scrolling if content overflows */
+    border-radius: 0 8px 8px 0; /* Match modal's border radius */
+  }
+  
+  .interaction-section h2 {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+  }
+  
+  .interaction-section .comments p {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  /* .interaction-section .comments ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .interaction-section .comments ul li {
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #fff;
+    color: #000;
+    border-radius: 5px;
+  } */
+
+  .delete-option {
+    bottom: -80%;
+    position: relative;
+    left: -6%;
+    cursor: pointer;
+    color: black;
+}
+
+.delete-option :hover{
+  color: rgb(154, 54, 54);
+  
+}
+
+.comment-text {
+  color: #000;
+  padding: 6%;
+  padding-left: 0%;
+  font-size: 93%;
+}
+
+.landscape-comment-text {
+  color: #000;
+  padding: 1%;
+  padding-left: 1%;
+  font-size: 90%;
+  position: relative;
+  left: -7%;
+}
+
+  .interaction-section.portrait {
+    width: 30%; /* Adjust width for portrait mode */
+  }
+  
+  .interaction-section.landscape {
+    width: 27%;
+}
+
+
+
+
+
+
+
+
+  
