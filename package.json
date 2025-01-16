@@ -6,6 +6,7 @@
     "build": "echo 'This is the root package.json and is not used for building'"
   },
   "dependencies": {
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "web-streams-polyfill": "^4.1.0"
   }
 }

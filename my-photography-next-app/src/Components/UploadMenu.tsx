@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import "web-streams-polyfill";
+import "dotenv/config";
 
 interface UploadMenuProps {
   closeMenu: () => void;
@@ -48,26 +50,30 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
     });
 
     const uploadParams = {
-      Bucket: s3Config.bucketName,
-      Key: selectedFile ? `photos/${selectedFile.name}` : "",
-      Body: selectedFile || "",
-      ContentType: selectedFile?.type || "",
+      Bucket: "framefinder-photography-abey",
+      Key: `photos/${selectedFile.name}`, // Destination key in S3
+      Body: new Uint8Array(await selectedFile.arrayBuffer()),
+      ContentType: selectedFile.type, // MIME type of the file
     };
+
+    console.log("Upload Parameters:", uploadParams);
 
     try {
       const command = new PutObjectCommand(uploadParams);
+      console.log("Attempting to upload:", uploadParams);
       await s3Client.send(command);
 
-      // Re-fetch images to update the gallery
-      await fetchImages();
-
       alert("File uploaded successfully!");
-      closeMenu(); // Close the upload modal
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      alert("Failed to upload file. Please try again.");
-    } finally {
-      setUploading(false);
+      await fetchImages();
+      closeMenu();
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error uploading file:", error);
+        alert(`Upload failed: ${error.message}`);
+      } else {
+        console.error("Unexpected error:", error);
+        alert("Upload failed: Unknown error");
+      }
     }
   };
 
