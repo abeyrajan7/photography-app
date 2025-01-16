@@ -1,8 +1,14 @@
-// src/app/page.tsx
-export const metadata = {
-  redirect: "/about",
-};
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  return null; // Nothing is rendered
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/about");
+  }, [router]);
+
+  return null; // Avoid rendering during redirection
 }
