@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack://[project]/src/Components/Header.css"],"sourcesContent":[".header-bar {\r\n    height: 43px;\r\n    background-color: #480404;\r\n    position: fixed;\r\n    width: 100%;\r\n    top: 0%;\r\n}\r\n\r\n.site-title {\r\n    position: relative;\r\n    top: 25%;\r\n    left: 3%;\r\n    color: blanchedalmond;\r\n}\r\n\r\n.nav-items{\r\n    position: relative;\r\n    display: inline-flex;\r\n    gap: 32%;\r\n    bottom: 25%;\r\n    left: 76%;\r\n}"],"names":[],"mappings":"AAAA;;;;;;;;AAQA;;;;;;;AAOA"}},
-    {"offset": {"line": 23, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
-}

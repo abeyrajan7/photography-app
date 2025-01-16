@@ -1,36 +1,38 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHeart,
-  faComment,
-  faPlus,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faComment, faPlus } from "@fortawesome/free-solid-svg-icons";
 import UploadMenu from "../../Components/UploadMenu";
 import "./page.css";
 
 export default function Gallery() {
+  type ImageData = {
+    key: string;
+    url: string;
+    title?: string;
+  };
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedPicture, setSelectedPicture] = useState(null);
+  const [selectedPicture, setSelectedPicture] = useState<ImageData | null>(
+    null
+  );
   const [isPortrait, setIsPortrait] = useState(false); // State to track orientation
-  const [loadedImages, setLoadedImages] = useState([]);
+  const [loadedImages, setLoadedImages] = useState<ImageData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const interactions = [
-    { photoId: 1, likeCount: 23, comments: ["Awesome", "Perfect Shot!"] },
-    {
-      photoId: 2,
-      likeCount: 10,
-      comments: ["The way he look at the kid...", "wow!"],
-    },
-    {
-      photoId: 3,
-      likeCount: 9,
-      comments: ["That looks amazing", "awesome click"],
-    },
-    { photoId: 4, likeCount: 10, comments: ["nice", "Love"] },
-  ];
+  // const interactions = [
+  //   { photoId: 1, likeCount: 23, comments: ["Awesome", "Perfect Shot!"] },
+  //   {
+  //     photoId: 2,
+  //     likeCount: 10,
+  //     comments: ["The way he look at the kid...", "wow!"],
+  //   },
+  //   {
+  //     photoId: 3,
+  //     likeCount: 9,
+  //     comments: ["That looks amazing", "awesome click"],
+  //   },
+  //   { photoId: 4, likeCount: 10, comments: ["nice", "Love"] },
+  // ];
 
   const fetchImages = async () => {
     try {
@@ -50,7 +52,7 @@ export default function Gallery() {
   }, []);
 
   //modal functions
-  const openModal = (img) => {
+  const openModal = (img: ImageData) => {
     const image = new Image();
     image.src = img.url;
 
@@ -74,7 +76,7 @@ export default function Gallery() {
     setIsModalOpen(false);
   };
 
-  const handleDelete = async (fileKey) => {
+  const handleDelete = async (fileKey: string) => {
     if (!fileKey) {
       console.error("File key is undefined. Cannot proceed with delete.");
       alert("No file selected for deletion.");
@@ -101,8 +103,8 @@ export default function Gallery() {
       }
 
       alert("Photo deleted successfully!");
-      setLoadedImages((prevImages) =>
-        prevImages.filter((img) => img.key !== fileKey)
+      setLoadedImages((prevImages: ImageData[]) =>
+        prevImages.filter((img: ImageData) => img.key !== fileKey)
       );
       setModalOpen(false);
     } catch (error) {
@@ -114,7 +116,7 @@ export default function Gallery() {
   return (
     <div className="photo-gallery">
       {loadedImages.length > 0 ? (
-        loadedImages.map((img, index) => (
+        loadedImages.map((img: ImageData, index) => (
           <div className="photo" key={index}>
             <figure className="hover-effect">
               <img
@@ -122,7 +124,7 @@ export default function Gallery() {
                 onClick={() => openModal(img)}
                 alt={`Photo ${index + 1}`}
               />
-              {interactions.map(() => {})}
+              {/* {interactions.map(() => {})} */}
               <figcaption className="interactions">
                 <span>
                   <FontAwesomeIcon icon={faHeart} /> 23
@@ -174,7 +176,7 @@ export default function Gallery() {
                   </li>
                 </ul>
                 <ul className="delete-option">
-                  <li onClick={() => handleDelete(selectedPicture?.key)}>
+                  <li onClick={() => handleDelete(selectedPicture?.key || "")}>
                     {/* <FontAwesomeIcon icon={faTrash} />  */}
                     Delete
                   </li>
@@ -190,8 +192,8 @@ export default function Gallery() {
         <div className="modal-overlay">
           <div className="modal-content">
             <UploadMenu
-              loadedImages={loadedImages}
-              setLoadedImages={setLoadedImages}
+              // loadedImages={loadedImages}
+              // setLoadedImages={setLoadedImages}
               fetchImages={fetchImages} // Pass fetchImages here
               closeMenu={closeUploadMenu}
             />

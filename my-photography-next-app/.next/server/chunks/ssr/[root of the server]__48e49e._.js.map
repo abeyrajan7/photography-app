@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 55, "column": 0}, "map": {"version":3,"sources":["file://D%3A/Next.js%20Project/my-photography-next-app/src/pages/about.tsx"],"sourcesContent":["import React from \"react\";\r\n\r\nexport default function about() {\r\n  return (\r\n    <div>\r\n      <h1>Here I AM</h1>\r\n    </div>\r\n  );\r\n}\r\n"],"names":[],"mappings":";;;;;AAEe,SAAS;IACtB,qBACE,qKAAC;kBACC,cAAA,qKAAC;sBAAG;;;;;;;;;;;AAGV"}},
-    {"offset": {"line": 75, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
-}

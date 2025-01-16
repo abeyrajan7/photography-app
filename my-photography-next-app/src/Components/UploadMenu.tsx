@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
-const UploadMenu = ({ closeMenu, fetchImages }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
+interface UploadMenuProps {
+  closeMenu: () => void;
+  fetchImages: () => Promise<void>;
+}
+
+const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
   // Replace with your S3 bucket configuration
@@ -13,8 +18,8 @@ const UploadMenu = ({ closeMenu, fetchImages }) => {
     secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY, // From .env.local
   };
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       const allowedTypes = ["image/jpeg", "image/png"];
       if (allowedTypes.includes(file.type)) {
@@ -44,9 +49,9 @@ const UploadMenu = ({ closeMenu, fetchImages }) => {
 
     const uploadParams = {
       Bucket: s3Config.bucketName,
-      Key: `photos/${selectedFile.name}`,
-      Body: selectedFile,
-      ContentType: selectedFile.type,
+      Key: selectedFile ? `photos/${selectedFile.name}` : "",
+      Body: selectedFile || "",
+      ContentType: selectedFile?.type || "",
     };
 
     try {
