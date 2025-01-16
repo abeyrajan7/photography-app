@@ -1,5 +1,8 @@
-import { redirect } from "next/navigation";
+// src/app/page.tsx
+export const metadata = {
+  redirect: "/about",
+};
 
 export default function Home() {
-  redirect("/about");
+  return null; // Nothing is rendered
 }
