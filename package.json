@@ -1,4 +1,10 @@
 {
+  "name": "root-project",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'This is the root package.json and is not used for building'"
+  },
   "dependencies": {
     "dotenv": "^16.4.7"
   }
