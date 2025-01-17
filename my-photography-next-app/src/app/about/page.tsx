@@ -1,9 +1,8 @@
-import React from "react";
-
 export default function About() {
   return (
     <div>
-      <h1>The About Page here sham</h1>
+      <h1>About Page</h1>
+      <p>Welcome to the about page of the Photography App!</p>
     </div>
   );
 }
