@@ -10,7 +10,7 @@ AWS.config.update({
 
 const express = require("express");
 const app = express();
-const port = 3001;
+const PORT = process.env.PORT || 3001;
 
 // Your S3 bucket name
 const BUCKET_NAME = "framefinder-photography-abey";
