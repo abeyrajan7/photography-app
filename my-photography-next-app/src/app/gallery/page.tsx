@@ -18,7 +18,7 @@ export default function Gallery() {
   const [isPortrait, setIsPortrait] = useState(false); // State to track orientation
   const [loadedImages, setLoadedImages] = useState<ImageData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const API_URL = "http://photography-app-azure.vercel.app/";
+  const API_URL = "https://photography-app-azure.vercel.app";
 
   // const interactions = [
   //   { photoId: 1, likeCount: 23, comments: ["Awesome", "Perfect Shot!"] },
@@ -37,7 +37,7 @@ export default function Gallery() {
 
   const fetchImages = async () => {
     try {
-      const response = await fetch(`${API_URL}api/images`);
+      const response = await fetch(`${API_URL}/api/images`);
       // const response = await fetch("http://localhost:3001/api/images");
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
