@@ -35,8 +35,6 @@ export default function Gallery() {
   //   { photoId: 4, likeCount: 10, comments: ["nice", "Love"] },
   // ];
 
-
-
   const fetchImages = async () => {
     try {
       // const response = await fetch("http://localhost:3001/api/images");
@@ -51,11 +49,10 @@ export default function Gallery() {
       console.error("Error fetching images:", error);
     }
   };
-  
+
   useEffect(() => {
     fetchImages();
   }, []);
-
 
   //modal functions
   const openModal = (img: ImageData) => {
