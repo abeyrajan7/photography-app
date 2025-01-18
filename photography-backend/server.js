@@ -19,30 +19,21 @@ app.use(cors());
 const s3 = new AWS.S3();
 app.use(express.json());
 
+app.use(
+  cors({
+    origin: ["https://photography-app-5osi.vercel.app"], // Your frontend's URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true, // Allow cookies if needed
+  })
+);
 // API Endpoint to Fetch Images
-app.get("/api/images", async (req, res) => {
-  try {
-    const params = {
-      Bucket: BUCKET_NAME,
-      Prefix: "photos/", // Specify the folder
-    };
-
-    // Fetch the list of objects in the `photos/` folder
-    const data = await s3.listObjectsV2(params).promise();
-    
-    // Generate URLs for each object
-    const images = data.Contents.map((item) => {
-      return {
-        key: item.Key,
-        url: `https://${BUCKET_NAME}.s3.amazonaws.com/${item.Key}`, // Public URL of the object
-      };
-    });
-
-    res.json({ success: true, data: images });
-  } catch (error) {
-    console.error("Error fetching images from S3:", error);
-    res.status(500).json({ success: false, message: "Error fetching images" });
-  }
+app.get("/api/images", (req, res) => {
+  res.json({
+    data: [
+      { id: 1, url: "https://example.com/image1.jpg", title: "Image 1" },
+      { id: 2, url: "https://example.com/image2.jpg", title: "Image 2" },
+    ],
+  });
 });
 
 // API EndPoint to Delete Images
