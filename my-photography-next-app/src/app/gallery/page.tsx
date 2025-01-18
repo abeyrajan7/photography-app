@@ -35,23 +35,27 @@ export default function Gallery() {
   //   { photoId: 4, likeCount: 10, comments: ["nice", "Love"] },
   // ];
 
+
+
   const fetchImages = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/images`);
       // const response = await fetch("http://localhost:3001/api/images");
+      const response = await fetch(`${API_URL}/api/images`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setLoadedImages(data.data);
+      console.log("Fetched data:", data); // Verify the response in the console
+      setLoadedImages(data.data); // Update the state with the image array
     } catch (error) {
       console.error("Error fetching images:", error);
     }
   };
-
+  
   useEffect(() => {
     fetchImages();
   }, []);
+
 
   //modal functions
   const openModal = (img: ImageData) => {
