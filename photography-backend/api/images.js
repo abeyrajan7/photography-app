@@ -25,7 +25,7 @@ export default async  function handler(req, res) {
         Bucket: "your-s3-bucket-name",
         Prefix: "photos/", // Folder containing images in S3
       };
-
+      console.log("here");
       const data = await s3.listObjectsV2(params).promise();
       console.log("S3 Data Contents:", data.Contents);
 
