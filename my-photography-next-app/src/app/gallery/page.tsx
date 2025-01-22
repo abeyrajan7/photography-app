@@ -77,7 +77,12 @@ export default function Gallery() {
     const fileName = fileKey.split("/").pop(); // This removes "photos/" and keeps "DSC_1862.JPG"
 
     try {
-      console.log("Sending DELETE request to:", `${API_URL}/${fileName}`);
+      console.log(
+        "Sending DELETE request to:",
+        `${API_URL}/${fileName}`,
+        " ",
+        process.env.NEXT_PUBLIC_API_URL
+      );
       const response = await fetch(`${API_URL}/${fileName}`, {
         method: "DELETE",
       });
