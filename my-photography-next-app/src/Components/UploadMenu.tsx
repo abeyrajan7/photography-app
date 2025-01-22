@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import "web-streams-polyfill";
+require("dotenv").config();
 
 interface UploadMenuProps {
   closeMenu: () => void;
@@ -13,11 +14,13 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
 
   // Replace with your S3 bucket configuration
   const s3Config = {
-    region: "ap-south-1",
     bucketName: "framefinder-photography-abey",
-    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID, // From .env.local
-    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY, // From .env.local
+    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION || "ap-south-1",
   };
+
+  console.log("AWS Region:", s3Config.region);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

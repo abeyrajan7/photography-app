@@ -19,21 +19,39 @@ app.use(cors());
 const s3 = new AWS.S3();
 app.use(express.json());
 
-app.use(
-  cors({
-    origin: ["https://photography-app-5osi.vercel.app"], // Your frontend's URL
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true, // Allow cookies if needed
-  })
-);
-// API Endpoint to Fetch Images
-app.get("/api/images", (req, res) => {
-  res.json({
-    data: [
-      { id: 1, url: "https://example.com/image1.jpg", title: "Image 1" },
-      { id: 2, url: "https://example.com/image2.jpg", title: "Image 2" },
-    ],
-  });
+app.get("/", (req, res) => {
+  res.send("Welcome to the backend!");
+});
+
+app.get("/api/images", async (req, res) => {
+  const bucketName = "framefinder-photography-abey"; // Replace with your bucket name
+  const prefix = "photos/"; // Folder prefix if your images are stored in a folder
+
+  const params = {
+    Bucket: bucketName,
+    Prefix: prefix,
+  };
+
+  try {
+    // Fetch the list of objects in the S3 bucket
+    const data = await s3.listObjectsV2(params).promise();
+
+    // Map the results to generate URLs
+    const images = data.Contents.map((item) => ({
+      url: `https://${bucketName}.s3.${s3.config.region}.amazonaws.com/${item.Key}`,
+      title: item.Key.split("/").pop(), // Use the file name as the title
+      key: item.Key,
+    }));
+
+    // Return the images as a response
+    res.json({
+      message: "List of images",
+      data: images,
+    });
+  } catch (error) {
+    console.error("Error fetching images:", error);
+    res.status(500).json({ error: "Failed to fetch images from S3" });
+  }
 });
 
 // API EndPoint to Delete Images
