@@ -18,7 +18,7 @@ export default function Gallery() {
   const [isPortrait, setIsPortrait] = useState(false); // State to track orientation
   const [loadedImages, setLoadedImages] = useState<ImageData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const API_URL = "https://photography-app-azure.vercel.app";
 
   const fetchImages = async () => {
     try {
