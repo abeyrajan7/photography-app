@@ -82,7 +82,7 @@ export default function Gallery() {
         process.env.NEXT_PUBLIC_API_URL,
         `${API_URL}/${fileName}`
       );
-      const response = await fetch(`${API_URL}/${fileName}`, {
+      const response = await fetch(`${API_URL}/api/images/${fileName}`, {
         method: "DELETE",
       });
 
