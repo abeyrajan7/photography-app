@@ -56,11 +56,9 @@ app.get("/api/images", async (req, res) => {
   }
 });
 
-// API EndPoint to Delete Images
-// app.delete("*", (req, res) => {
-//   res.status(404).send("Route not found");
-//   next();
-// });
+
+
+
 app.delete("/api/images/:fileKey", async (req, res) => {
   console.log('here1');
   console.log("S3 Key to delete:", req.params);
