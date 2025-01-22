@@ -7,7 +7,7 @@ import "./page.css";
 
 export default function Gallery() {
   type ImageData = {
-    key: string;gitcd
+    key: string;
     url: string;
     title?: string;
   };

@@ -25,6 +25,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/images", async (req, res) => {
+  console.log("Here in server.js");
   const bucketName = "framefinder-photography-abey"; // Replace with your bucket name
   const prefix = "photos/"; // Folder prefix if your images are stored in a folder
 
