@@ -22,6 +22,7 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
   };
 
   console.log("AWS Region:", s3Config.region);
+  console.log("AWS Access Key:", s3Config.accessKeyId);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
