@@ -7,7 +7,7 @@ import "./page.css";
 
 export default function Gallery() {
   type ImageData = {
-    key: string;
+    key: string;gitcd
     url: string;
     title?: string;
   };
@@ -18,26 +18,11 @@ export default function Gallery() {
   const [isPortrait, setIsPortrait] = useState(false); // State to track orientation
   const [loadedImages, setLoadedImages] = useState<ImageData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const API_URL = "https://photography-backend-murex.vercel.app";
-
-  // const interactions = [
-  //   { photoId: 1, likeCount: 23, comments: ["Awesome", "Perfect Shot!"] },
-  //   {
-  //     photoId: 2,
-  //     likeCount: 10,
-  //     comments: ["The way he look at the kid...", "wow!"],
-  //   },
-  //   {
-  //     photoId: 3,
-  //     likeCount: 9,
-  //     comments: ["That looks amazing", "awesome click"],
-  //   },
-  //   { photoId: 4, likeCount: 10, comments: ["nice", "Love"] },
-  // ];
+  const API_URL =
+    "https://photography-backend-3qsvzkqrq-abeys-projects.vercel.app";
 
   const fetchImages = async () => {
     try {
-      // const response = await fetch("http://localhost:3001/api/images");
       const response = await fetch(`${API_URL}/api/images`);
       const data = await response.json();
       console.log(data);
