@@ -79,9 +79,8 @@ export default function Gallery() {
     try {
       console.log(
         "Sending DELETE request to:",
-        `${API_URL}/${fileName}`,
-        " ",
-        process.env.NEXT_PUBLIC_API_URL
+        process.env.NEXT_PUBLIC_API_URL,
+        `${API_URL}/${fileName}`
       );
       const response = await fetch(`${API_URL}/${fileName}`, {
         method: "DELETE",
