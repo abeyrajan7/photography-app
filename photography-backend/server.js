@@ -60,31 +60,35 @@ app.get("/api/images", async (req, res) => {
 
 
 app.delete("/api/images/:fileKey", async (req, res) => {
-  console.log('here1');
-  console.log("S3 Key to delete:", req.params);
-  const { fileKey } = req.params; // Extract the key from the URL
-  console.log("Received fileKey for deletion:", fileKey); // Debugging
+  const { fileKey } = req.params;
 
-  const fullKey = `photos/${fileKey}`;
-  console.log("Processed fileKey for deletion:", fullKey);
   if (!fileKey) {
     return res.status(400).json({ error: "File key is required" });
   }
 
+  const fullKey = `photos/${fileKey}`;
+  console.log("Attempting to delete file:", fullKey);
+
   const params = {
-    Bucket: "framefinder-photography-abey",
+    Bucket: process.env.AWS_BUCKET_NAME || "framefinder-photography-abey", // Use env variable
     Key: fullKey, // Use the key received from the frontend
   };
 
   try {
     await s3.deleteObject(params).promise();
+    console.log("File deleted successfully:", fullKey);
     res.status(200).json({ message: "File deleted successfully" });
-    
   } catch (error) {
     console.error("Error deleting file from S3:", error);
+
+    // Handle specific errors
     if (error.code === "NoSuchKey") {
       return res.status(404).json({ error: "File not found in S3" });
+    } else if (error.code === "AccessDenied") {
+      return res.status(403).json({ error: "Access denied to S3 bucket" });
     }
+
+    // General error response
     res.status(500).json({ error: "Failed to delete file" });
   }
 });
