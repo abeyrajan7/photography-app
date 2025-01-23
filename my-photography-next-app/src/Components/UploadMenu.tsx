@@ -19,6 +19,10 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
     accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
     region: process.env.AWS_REGION || "ap-south-1",
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
+    },
   };
 
   console.log("AWS Region:", s3Config.region);
@@ -46,19 +50,20 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
     setUploading(true);
 
     const s3Client = new S3Client({
-      region: s3Config.region || "ap-south-1",
+      region: process.env.AWS_REGION || "ap-south-1",
       credentials: {
-        accessKeyId: s3Config.accessKeyId || "",
-        secretAccessKey: s3Config.secretAccessKey || "",
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
       },
     });
-
     const uploadParams = {
       Bucket: "framefinder-photography-abey",
-      Key: `photos/${selectedFile.name}`, // Destination key in S3
+      Key: `photos/${selectedFile.name}`,
       Body: new Uint8Array(await selectedFile.arrayBuffer()),
-      ContentType: selectedFile.type, // MIME type of the file
+      ContentType: selectedFile.type,
     };
+
+    console.log("Upload Parameters:", uploadParams);
 
     const url = `https://${uploadParams.Bucket}.s3.ap-south-1.amazonaws.com/${uploadParams.Key}`;
     console.log("Generated S3 URL:", url);
@@ -67,22 +72,21 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
     try {
       const command = new PutObjectCommand(uploadParams);
       console.log("Attempting to upload:", uploadParams);
-      console.log("Access Key:", s3Config.accessKeyId);
-      console.log("Secret Key:", s3Config.secretAccessKey);
-      console.log("Region:", s3Config.region);
-      await s3Client.send(command);
 
+      await s3Client.send(command);
       alert("File uploaded successfully!");
       await fetchImages();
       closeMenu();
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error("Error uploading file:", error);
+        console.error("Error uploading file:", error.message);
         alert(`Upload failed: ${error.message}`);
       } else {
         console.error("Unexpected error:", error);
         alert("Upload failed: Unknown error");
       }
+    } finally {
+      setUploading(false);
     }
   };
 
