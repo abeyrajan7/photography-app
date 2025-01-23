@@ -46,7 +46,7 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
     setUploading(true);
 
     const s3Client = new S3Client({
-      region: s3Config.region,
+      region: s3Config.region || "ap-south-1",
       credentials: {
         accessKeyId: s3Config.accessKeyId || "",
         secretAccessKey: s3Config.secretAccessKey || "",
@@ -60,11 +60,16 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
       ContentType: selectedFile.type, // MIME type of the file
     };
 
+    const url = `https://${uploadParams.Bucket}.s3.ap-south-1.amazonaws.com/${uploadParams.Key}`;
+
     console.log("Upload Parameters:", uploadParams);
 
     try {
       const command = new PutObjectCommand(uploadParams);
       console.log("Attempting to upload:", uploadParams);
+      console.log("Access Key:", s3Config.accessKeyId);
+      console.log("Secret Key:", s3Config.secretAccessKey);
+      console.log("Region:", s3Config.region);
       await s3Client.send(command);
 
       alert("File uploaded successfully!");
