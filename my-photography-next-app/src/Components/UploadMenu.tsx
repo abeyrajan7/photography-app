@@ -61,7 +61,7 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
     };
 
     const url = `https://${uploadParams.Bucket}.s3.ap-south-1.amazonaws.com/${uploadParams.Key}`;
-
+    console.log("Generated S3 URL:", url);
     console.log("Upload Parameters:", uploadParams);
 
     try {
