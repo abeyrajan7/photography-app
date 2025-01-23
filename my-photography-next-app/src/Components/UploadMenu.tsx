@@ -13,21 +13,6 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  // Replace with your S3 bucket configuration
-  const s3Config = {
-    bucketName: "framefinder-photography-abey",
-    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION || "ap-south-1",
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
-    },
-  };
-
-  console.log("AWS Region:", s3Config.region);
-  console.log("AWS Access Key:", s3Config.accessKeyId);
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -67,7 +52,7 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
 
     const url = `https://${uploadParams.Bucket}.s3.ap-south-1.amazonaws.com/${uploadParams.Key}`;
     console.log("Generated S3 URL:", url);
-    console.log("Upload Parameters:", uploadParams);
+    console.log("Client_ID", s3Client);
 
     try {
       const command = new PutObjectCommand(uploadParams);
