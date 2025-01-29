@@ -20,3 +20,66 @@
     bottom: 25%;
     left: 76%;
 }
+
+.nav-items .active-tab {
+    /* background-color: #2ecc71; */
+    color: rgb(30, 151, 48) !important;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.nav-items .active-tab {
+    background-color: #2ecc71; /* Green for active */
+    color: white !important;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+/* Hamburger Icon (Hidden on Desktop) */
+.hamburger {
+    display: none;
+    cursor: pointer;
+    color: white;
+    font-size: 24px;
+}
+
+/* Responsive Styles for Mobile */
+@media (max-width: 768px) {
+    .hamburger {
+        display: block;
+        position: absolute;
+        right: 20px;
+        top: 12px;
+    }
+
+    .nav-items {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 50px;
+        right: 10px;
+        background-color: #1e1e1e;
+        width: 23%;
+        padding: 10px;
+        border-radius: 5px;
+        height: 150%;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-items :hover {
+        cursor: pointer;
+    }
+
+    .nav-items.open {
+        display: flex;
+    }
+
+    .nav-items li {
+        padding: 0px;
+        text-align: center;
+        width: 100%;
+        color: white;
+        position: relative;
+        margin-top: -5%;
+    }
+}

@@ -302,6 +302,13 @@
 }
 
 
+@media (max-width: 768px) {
+  .photo {
+    width: calc(45% - 10px);
+  }
+}
+
+
 
 
 

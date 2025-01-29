@@ -20,6 +20,32 @@
     text-align: center;
     
   }
+
+  .about-box:hover {
+    transform: scale(1); /* Slightly enlarge the card */
+    box-shadow: 0px 10px 25px rgba(255, 105, 180, 0.4); /* Neon glow effect */
+    background: linear-gradient(135deg, #ff007f, #ff4c4c); /* Change color on hover */
+    color: #fff;
+}
+
+/* Individual sections can have slightly different effects */
+.about-box:nth-child(1):hover {
+    box-shadow: 0px 10px 25px rgba(0, 255, 255, 0.6);
+}
+
+.about-box:nth-child(2):hover {
+    box-shadow: 0px 10px 25px rgba(255, 165, 0, 0.6);
+}
+
+.about-box:nth-child(3):hover {
+    box-shadow: 0px 10px 25px rgba(50, 205, 50, 0.6);
+}
+
+.about-box:nth-child(4):hover {
+    box-shadow: 0px 10px 25px rgba(255, 20, 147, 0.6);
+}
+
+
   
   .bio-section {
     background: linear-gradient(135deg, #007bff, #6610f2);
@@ -34,6 +60,7 @@
   
   .skills-section, .education-section, .experience-section {
     background: white;
+    padding: 5%;
   }
   
   .skills-section ul {
@@ -72,5 +99,21 @@
       grid-template-columns: 1fr;
       grid-template-rows: auto;
     }
+
+    .about-container {
+        display: inline-block;
+        padding: 13px;
+        margin-right: 0%;
+    }
+
+    .about-box {
+        border-radius: 16px;
+    }
+
+    .about-box:not(:first-child) {
+        margin-top: 4%;
+    }
+
+
   }
   
