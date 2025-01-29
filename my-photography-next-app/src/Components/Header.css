@@ -19,18 +19,18 @@
     gap: 32%;
     bottom: 25%;
     left: 76%;
+    color: white;
 }
 
-.nav-items .active-tab {
-    /* background-color: #2ecc71; */
+/* .nav-items .active-tab {
     color: rgb(30, 151, 48) !important;
     border-radius: 5px;
     font-weight: bold;
-}
+} */
 
 .nav-items .active-tab {
-    background-color: #2ecc71; /* Green for active */
-    color: white !important;
+    color: #2ecc71; /* Green for active */
+    /* color: white !important; */
     border-radius: 5px;
     font-weight: bold;
 }
@@ -41,6 +41,10 @@
     cursor: pointer;
     color: white;
     font-size: 24px;
+}
+
+.nav-items :hover {
+    cursor: pointer;
 }
 
 /* Responsive Styles for Mobile */
@@ -66,12 +70,9 @@
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
     }
 
-    .nav-items :hover {
-        cursor: pointer;
-    }
-
     .nav-items.open {
         display: flex;
+        margin-left: -2%;
     }
 
     .nav-items li {
