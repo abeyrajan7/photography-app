@@ -25,9 +25,9 @@ export default function Header() {
           onClick={() => handleNavigation("/gallery")}
           style={{ cursor: "pointer", color: "blanchedalmond" }}
         >
-          Galary
+          Photography Galary
         </li>
-        <li style={{ cursor: "pointer", color: "blanchedalmond" }}>Contact</li>
+        {/* <li style={{ cursor: "pointer", color: "blanchedalmond" }}>Contact</li> */}
       </ul>
     </div>
   );
