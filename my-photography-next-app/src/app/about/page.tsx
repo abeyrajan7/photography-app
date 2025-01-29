@@ -13,7 +13,7 @@ export default function About() {
           <Image src={image} alt="Abey K Rajan" width={150} height={150} />
         </div>
         <h2>Abey K Rajan</h2>
-        <p>Software Engineer | UI/UX Enthusiast | AI Researcher</p>
+        <p>Software Engineer | Full-Stack Developer | AI Researcher</p>
         <p>
           Email: <a href="mailto:abeyk1@umbc.edu">abeyk1@umbc.edu</a>
         </p>
