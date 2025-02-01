@@ -32,7 +32,7 @@ export default function Header() {
         </li>
         <li
           onClick={() => handleNavigation("/gallery")}
-          className={activeTab === "/gallery" ? "active-tab" : ""}
+          className={activeTab === "/gallery" ? "active-tab" : " "}
         >
           Photography
         </li>

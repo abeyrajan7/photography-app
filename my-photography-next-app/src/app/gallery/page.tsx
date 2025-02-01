@@ -92,7 +92,7 @@ export default function Gallery() {
 
       alert("Photo deleted successfully!");
       setLoadedImages((prevImages: ImageData[]) =>
-        prevImages.filter((img: ImageData) => img.key !== fileKey)
+        prevImages.filter((img: ImageData) => img.key !== fileKey) //here
       );
       setModalOpen(false);
     } catch (error) {
