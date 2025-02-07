@@ -1,4 +1,6 @@
-require("dotenv").config({ path: ".env.local" });
+require("dotenv").config({ path: "../.env" }); // Load from root
+// console.log("Backend API URL:", process.env.NEXT_PUBLIC_API_URL);
+// console.log("Database URL:", process.env.DATABASE_URL);
 
 const AWS = require("aws-sdk");
 
@@ -49,7 +51,7 @@ app.get("/api/images", async (req, res) => {
   const bucketName = "framefinder-photography-abey"; // Your bucket name
   const prefix = "photos/"; // Folder prefix if images are stored in a folder
   const user_id = req.query.user_id; // Logged-in user's email
-  console.log('logged In user', user_id);
+  // console.log('logged In user', user_id);
 
 
   const params = {
@@ -85,21 +87,21 @@ app.get("/api/images", async (req, res) => {
     // Fetch user's liked images (if logged in)
     let likedImages = new Set();
     if (user_id) {
-      console.log("🔍 Fetching likes for user:", user_id);
+      // console.log("🔍 Fetching likes for user:", user_id);
     
       const likesResult = await pool.query(
         "SELECT post_url FROM likes WHERE user_id = $1",
         [user_id]
       );
     
-      console.log("🛠️ Raw likes result:", likesResult.rows); // Log the actual result from DB
+      // console.log("🛠️ Raw likes result:", likesResult.rows); // Log the actual result from DB
     
       likedImages = new Set(likesResult.rows.map((row) => row.post_url));
     
-      console.log("✅ User's liked images:", likedImages); // Should now contain image keys
+      // console.log("✅ User's liked images:", likedImages); // Should now contain image keys
     }
     
-    console.log("User's liked images:", likedImages);
+    // console.log("User's liked images:", likedImages);
 
 
 
@@ -110,7 +112,7 @@ app.get("/api/images", async (req, res) => {
       liked: likedImages.has(img.key), // Check if the user liked this image
     }));
 
-    console.log("Final images with likes:", images);
+    // console.log("Final images with likes:", images);
     
     res.json({ success: true, message: "Fetched images with like counts", data: images });
   } catch (error) {
