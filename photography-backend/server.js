@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config({ path: ".env.local" });
 
 const AWS = require("aws-sdk");
 
@@ -8,26 +8,49 @@ AWS.config.update({
   region: process.env.AWS_REGION || "ap-south-1", // Useedd fallback if .env is not loaded
 });
 
-console.log("AWS_REGION:", process.env.AWS_REGION);
 const express = require("express");
 const app = express();
 const port = 3001;
+const { Client } = require('pg');
+const { Pool } = require("pg");
 
 // Your S3 bucket name
 const BUCKET_NAME = "framefinder-photography-abey";
 const cors = require("cors");
 app.use(cors());
 const s3 = new AWS.S3();
+
 app.use(express.json());
+const client = new Client({
+  connectionString: process.env.DATABASE_URL, // Use your Neon connection URL
+});
+client.connect();
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL, // Ensure this is set in `.env`
+  ssl: {
+    rejectUnauthorized: false, // Required for managed databases like Neon.tech
+  },
+});
+
+pool.on("error", (err) => {
+  console.error("Unexpected PostgreSQL pool error:", err);
+  
+});
 
 app.get("/", (req, res) => {
   res.send("Welcome to the backend!");
 });
 
+
+
+// get all images
 app.get("/api/images", async (req, res) => {
-  console.log("Here in server.js");
-  const bucketName = "framefinder-photography-abey"; // Replace with your bucket name
-  const prefix = "photos/"; // Folder prefix if your images are stored in a folder
+  const bucketName = "framefinder-photography-abey"; // Your bucket name
+  const prefix = "photos/"; // Folder prefix if images are stored in a folder
+  const user_id = req.query.user_id; // Logged-in user's email
+  console.log('logged In user', user_id);
+
 
   const params = {
     Bucket: bucketName,
@@ -35,30 +58,67 @@ app.get("/api/images", async (req, res) => {
   };
 
   try {
-    // Fetch the list of objects in the S3 bucket
+    // Fetch image list from S3
     const data = await s3.listObjectsV2(params).promise();
 
-    // Map the results to generate URLs
-    const images = data.Contents.map((item) => ({
+    let images = data.Contents.map((item) => ({
       url: `https://${bucketName}.s3.${s3.config.region}.amazonaws.com/${item.Key}`,
-      title: item.Key.split("/").pop(), // Use the file name as the title
+      title: item.Key.split("/").pop(),
       key: item.Key,
+      likes: 0, // Default likes count
+      liked: false, 
     }));
 
-    // Return the images as a response
-    res.json({
-      message: "List of images",
-      data: images,
+
+
+    // Fetch like counts for all images
+    const likeCountsResult = await pool.query(
+      "SELECT post_url, COUNT(*) as like_count FROM likes GROUP BY post_url"
+    );
+
+    // Convert database result to a map
+    let likeCounts = {};
+    likeCountsResult.rows.forEach((row) => {
+      likeCounts[row.post_url] = parseInt(row.like_count, 10);
     });
+
+    // Fetch user's liked images (if logged in)
+    let likedImages = new Set();
+    if (user_id) {
+      console.log("🔍 Fetching likes for user:", user_id);
+    
+      const likesResult = await pool.query(
+        "SELECT post_url FROM likes WHERE user_id = $1",
+        [user_id]
+      );
+    
+      console.log("🛠️ Raw likes result:", likesResult.rows); // Log the actual result from DB
+    
+      likedImages = new Set(likesResult.rows.map((row) => row.post_url));
+    
+      console.log("✅ User's liked images:", likedImages); // Should now contain image keys
+    }
+    
+    console.log("User's liked images:", likedImages);
+
+
+
+    // Update images with like count and liked status
+    images = images.map((img) => ({
+      ...img,
+      likes: likeCounts[img.key] || 0, // Assign like count or default to 0
+      liked: likedImages.has(img.key), // Check if the user liked this image
+    }));
+
+    console.log("Final images with likes:", images);
+    
+    res.json({ success: true, message: "Fetched images with like counts", data: images });
   } catch (error) {
-    console.error("Error fetching images:", error);
-    res.status(500).json({ error: "Failed to fetch images from S3" });
+    res.status(500).json({ error: "Database error" });
   }
 });
 
-
-
-
+// delete an image
 app.delete("/api/images/:fileKey", async (req, res) => {
   const { fileKey } = req.params;
 
@@ -76,7 +136,6 @@ app.delete("/api/images/:fileKey", async (req, res) => {
 
   try {
     await s3.deleteObject(params).promise();
-    console.log("File deleted successfully:", fullKey);
     res.status(200).json({ message: "File deleted successfully" });
   } catch (error) {
     console.error("Error deleting file from S3:", error);
@@ -90,6 +149,62 @@ app.delete("/api/images/:fileKey", async (req, res) => {
 
     // General error response
     res.status(500).json({ error: "Failed to delete file" });
+  }
+});
+
+// unlike an image
+app.delete("/api/unlike", async (req, res) => {
+  try {
+    const { user_id, image_key } = req.body; // Extract JSON body
+    console.log("🚨 Unlike Request Received:", req.body); // Debugging
+
+    if (!user_id || !image_key) {
+      return res.status(400).json({ error: "Missing required fields: user_id or image_key" });
+    }
+
+    // ✅ Remove the like from the database
+    const result = await pool.query(
+      `DELETE FROM likes WHERE user_id = $1 AND post_url = $2 RETURNING *;`,
+      [user_id, image_key]
+    );
+
+    if (result.rowCount > 0) {
+      res.json({ success: true, message: "Unliked successfully", like: result.rows[0] });
+    } else {
+      res.status(400).json({ success: false, message: "Like not found" });
+    }
+  } catch (error) {
+    console.error("❌ Database error:", error);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+
+app.post("/api/like", async (req, res) => {
+  const { user_id, image_key } = req.body; // Access JSON body
+  console.log("Request Body:", req.body); // Debugging
+
+  if (!user_id || !image_key) {
+    return res.status(400).json({ error: "Missing required fields: user_id or image_key" });
+  }
+
+  try {
+    const result = await client.query(
+      `INSERT INTO likes (user_id, post_url, created_at)
+       VALUES ($1, $2, NOW())
+       ON CONFLICT (user_id, post_url) DO NOTHING
+       RETURNING *;`,
+      [user_id, image_key]
+    );
+
+    if (result.rowCount > 0) {
+      res.json({ success: true, message: "Liked successfully", like: result.rows[0] });
+    } else {
+      res.status(400).json({ success: false, message: "User has already liked this image" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Database error" });
   }
 });
 

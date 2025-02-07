@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faComment, faPlus } from "@fortawesome/free-solid-svg-icons";
 import UploadMenu from "../../Components/UploadMenu";
+import LoginModal from "../../Components/LoginModal";
+import { useSession } from "next-auth/react";
 import "./page.css";
 
 export default function Gallery() {
@@ -10,6 +12,8 @@ export default function Gallery() {
     key: string;
     url: string;
     title?: string;
+    likes?: number;
+    liked?: boolean;
   };
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPicture, setSelectedPicture] = useState<ImageData | null>(
@@ -18,28 +22,221 @@ export default function Gallery() {
   const [isPortrait, setIsPortrait] = useState(false); // State to track orientation
   const [loadedImages, setLoadedImages] = useState<ImageData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const API_URL = "https://photography-app-azure.vercel.app";
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  // const API_URL = "https://photography-app-azure.vercel.app";
+  const API_URL = "http://localhost:3001";
+  // const API_URL = "https://photography-app-azure.vercel.app";
 
-  const fetchImages = async () => {
+  const { data: session } = useSession();
+  // const [clientSession, setClientSession] = useState<typeof session | null>(
+  //   null
+  // );
+
+  async function handleUnlike(imageKey: string) {
+    console.log("User session:", session);
+
+    if (!session) {
+      setModalOpen(false);
+      setIsLoginModalOpen(true); // Show login modal if not logged in
+      return;
+    }
+
+    const userEmail = session.user?.email;
+    if (!userEmail) {
+      console.error("Error: Email is not available in the session.");
+      return;
+    }
+
+    // ✅ Step 1: Optimistically Update State (Update UI instantly)
+    setLoadedImages((prevImages) =>
+      prevImages.map((img) =>
+        img.key === imageKey
+          ? {
+              ...img,
+              likes: (img.likes || 0) + (img.liked ? -1 : 1),
+              liked: !img.liked,
+            }
+          : img
+      )
+    );
+
+    // ✅ Step 1.1: Also update the `selectedPicture` in modal
+    if (selectedPicture?.key === imageKey) {
+      setSelectedPicture((prev) =>
+        prev
+          ? {
+              ...prev,
+              likes: (prev.likes || 0) + (prev.liked ? -1 : 1),
+              liked: !prev.liked,
+            }
+          : null
+      );
+    }
+
     try {
-      const response = await fetch(`${API_URL}/api/images`);
+      // ✅ Step 2: Send API Request to Update Backend
+      const response = await fetch("http://localhost:3001/api/unlike", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userEmail, image_key: imageKey }),
+      });
+
       const data = await response.json();
-      console.log(data);
+      console.log("API Response:", data);
+
+      if (!data.success) {
+        throw new Error("Unlike request failed");
+      }
+    } catch (error) {
+      console.error("Error updating Unlike:", error);
+
+      // ❌ Step 3: Rollback UI if API Fails
+      setLoadedImages((prevImages) =>
+        prevImages.map((img) =>
+          img.key === imageKey
+            ? {
+                ...img,
+                likes: (img.likes || 0) - (img.liked ? -1 : 1),
+                liked: !img.liked,
+              }
+            : img
+        )
+      );
+
+      // ❌ Step 3.1: Rollback `selectedPicture` if API Fails
+      if (selectedPicture?.key === imageKey) {
+        setSelectedPicture((prev) =>
+          prev
+            ? {
+                ...prev,
+                likes: (prev.likes || 0) - (prev.liked ? -1 : 1),
+                liked: !prev.liked,
+              }
+            : null
+        );
+      }
+    }
+  }
+
+  async function handleLikes(imageKey: string) {
+    console.log("User session:", session);
+
+    if (!session) {
+      setModalOpen(false);
+      setIsLoginModalOpen(true); // Show login modal if not logged in
+      return;
+    }
+
+    const userEmail = session.user?.email;
+    if (!userEmail) {
+      console.error("Error: Email is not available in the session.");
+      return;
+    }
+
+    // ✅ Step 1: Optimistically Update State (Update UI instantly)
+    setLoadedImages((prevImages) =>
+      prevImages.map((img) =>
+        img.key === imageKey
+          ? {
+              ...img,
+              likes: (img.likes || 0) + (img.liked ? -1 : 1),
+              liked: !img.liked,
+            }
+          : img
+      )
+    );
+
+    // ✅ Step 1.1: Also update the `selectedPicture` in modal
+    if (selectedPicture?.key === imageKey) {
+      setSelectedPicture((prev) =>
+        prev
+          ? {
+              ...prev,
+              likes: (prev.likes || 0) + (prev.liked ? -1 : 1),
+              liked: !prev.liked,
+            }
+          : null
+      );
+    }
+
+    try {
+      // ✅ Step 2: Send API Request to Update Backend
+      const response = await fetch("http://localhost:3001/api/like", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userEmail, image_key: imageKey }),
+      });
+
+      const data = await response.json();
+      console.log("API Response:", data);
+
+      if (!data.success) {
+        throw new Error("Like request failed");
+      }
+    } catch (error) {
+      console.error("Error updating like:", error);
+
+      // ❌ Step 3: Rollback UI if API Fails
+      setLoadedImages((prevImages) =>
+        prevImages.map((img) =>
+          img.key === imageKey
+            ? {
+                ...img,
+                likes: (img.likes || 0) + (img.liked ? -1 : 1),
+                liked: !img.liked,
+              }
+            : img
+        )
+      );
+
+      // ❌ Step 3.1: Rollback `selectedPicture` if API Fails
+      if (selectedPicture?.key === imageKey) {
+        setSelectedPicture((prev) =>
+          prev
+            ? {
+                ...prev,
+                likes: (prev.likes || 0) + (prev.liked ? -1 : 1),
+                liked: !prev.liked,
+              }
+            : null
+        );
+      }
+    }
+  }
+
+  const fetchImages = async (userEmail?: string | null | undefined) => {
+    try {
+      console.log("📢 Session Data:", session);
+
+      // const userEmail = session?.user?.email;
+      console.log("📢 Extracted userEmail:", userEmail);
+      const url = userEmail
+        ? `${API_URL}/api/images?user_id=${encodeURIComponent(userEmail)}`
+        : `${API_URL}/api/images`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      console.log("Fetched data:", data); // Verify the response in the console
-      setLoadedImages(data.data); // Update the state with the image array
-      console.log("Loaded Images:", loadedImages);
+      console.log(data.data[0].likes);
+
+      setLoadedImages([...data.data]); // Ensure a fresh state update
+
+      setTimeout(() => {
+        console.log("✅ State after update:", loadedImages);
+      }, 1000);
     } catch (error) {
       console.error("Error fetching images:", error);
     }
   };
 
   useEffect(() => {
-    fetchImages();
-  }, []);
+    // setClientSession(session);
+    fetchImages(session?.user?.email || null);
+  }, [session]); // Runs whenever session updates
 
   //modal functions
   const openModal = (img: ImageData) => {
@@ -91,8 +288,9 @@ export default function Gallery() {
       }
 
       alert("Photo deleted successfully!");
-      setLoadedImages((prevImages: ImageData[]) =>
-        prevImages.filter((img: ImageData) => img.key !== fileKey) //here
+      setLoadedImages(
+        (prevImages: ImageData[]) =>
+          prevImages.filter((img: ImageData) => img.key !== fileKey) //here
       );
       setModalOpen(false);
     } catch (error) {
@@ -115,7 +313,11 @@ export default function Gallery() {
               {/* {interactions.map(() => {})} */}
               <figcaption className="interactions">
                 <span>
-                  <FontAwesomeIcon icon={faHeart} /> 23
+                  <FontAwesomeIcon
+                    icon={faHeart}
+                    className={img.liked ? "liked-icon" : "unliked-icon"} // Change color based on liked status
+                  />{" "}
+                  {img.likes}
                 </span>
                 <span>
                   <FontAwesomeIcon icon={faComment} /> 12
@@ -160,7 +362,7 @@ export default function Gallery() {
                       isPortrait ? "comment-text" : "landscape-comment-text"
                     }`}
                   >
-                    abeyrajan7: This a n amazong picture.
+                    abeyrajan7: This an amazing picture.
                   </li>
                 </ul>
                 <ul className="delete-option">
@@ -168,7 +370,18 @@ export default function Gallery() {
                     {/* <FontAwesomeIcon icon={faTrash} />  */}
                     Delete
                   </li>
-                  <li>Like</li>
+                  {selectedPicture?.liked ? (
+                    <li
+                      onClick={() => handleUnlike(selectedPicture?.key || "")}
+                    >
+                      {/* onClick={() => handleLikes(selectedPicture?.key || "")}> */}
+                      Unlike ({selectedPicture?.likes || 0})
+                    </li>
+                  ) : (
+                    <li onClick={() => handleLikes(selectedPicture?.key || "")}>
+                      Like ({selectedPicture?.likes || 0})
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>
@@ -188,11 +401,18 @@ export default function Gallery() {
           </div>
         </div>
       )}
+
       <div className="btn-parent">
         <button className="add-btn fas fa-plus" onClick={openUploadMenu}>
           <FontAwesomeIcon icon={faPlus} />
         </button>
       </div>
+
+      {/* Render Login Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
     </div>
   );
 }

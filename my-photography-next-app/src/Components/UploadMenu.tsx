@@ -6,7 +6,7 @@ dotenv.config();
 
 interface UploadMenuProps {
   closeMenu: () => void;
-  fetchImages: () => Promise<void>;
+  fetchImages: (userEmail?: string | null) => Promise<void>;
 }
 
 const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {

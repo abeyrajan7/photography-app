@@ -301,6 +301,10 @@
     width: 27%;
 }
 
+.liked-icon{
+  color: red;
+}
+
 
 @media (max-width: 768px) {
   .photo {

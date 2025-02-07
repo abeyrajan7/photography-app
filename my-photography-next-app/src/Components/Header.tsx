@@ -5,11 +5,18 @@ import "./Header.css";
 import { useState } from "react";
 import { FaBars } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 
 export default function Header() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("/about");
   const [menuOpen, setMenuOpen] = useState(false);
+  const { data: session } = useSession();
+  // const { data: session } = useSession();
+
+  async function handleLogout() {
+    await signOut({ callbackUrl: "/" }); // Redirects user to home after logout
+  }
 
   const handleNavigation = (path: string) => {
     setActiveTab(path);
@@ -36,6 +43,7 @@ export default function Header() {
         >
           Photography
         </li>
+        {session && <li onClick={() => handleLogout()}>Logout</li>}
       </ul>
     </div>
   );
