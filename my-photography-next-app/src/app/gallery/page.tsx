@@ -23,8 +23,8 @@ export default function Gallery() {
   const [loadedImages, setLoadedImages] = useState<ImageData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const API_URL = "https://photography-app-azure.vercel.app";
-  // const API_URL = "http://localhost:3001";
+  // const API_URL = "https://photography-app-azure.vercel.app";
+  const API_URL = "http://localhost:3001";
   // const API_URL = "https://photography-app-azure.vercel.app";
 
   const { data: session } = useSession();
@@ -122,6 +122,7 @@ export default function Gallery() {
     console.log("User session:", session);
 
     if (!session) {
+      console.log("here in likes to navigate to login modal");
       setModalOpen(false);
       setIsLoginModalOpen(true); // Show login modal if not logged in
       return;
@@ -176,7 +177,6 @@ export default function Gallery() {
     } catch (error) {
       console.error("Error updating like:", error);
 
-      // ❌ Step 3: Rollback UI if API Fails
       setLoadedImages((prevImages) =>
         prevImages.map((img) =>
           img.key === imageKey
@@ -189,7 +189,6 @@ export default function Gallery() {
         )
       );
 
-      // ❌ Step 3.1: Rollback `selectedPicture` if API Fails
       if (selectedPicture?.key === imageKey) {
         setSelectedPicture((prev) =>
           prev
@@ -206,8 +205,6 @@ export default function Gallery() {
 
   const fetchImages = async (userEmail?: string | null | undefined) => {
     try {
-      console.log("📢 Session Data:", session);
-
       // const userEmail = session?.user?.email;
       console.log("📢 Extracted userEmail:", userEmail);
       const url = userEmail
@@ -274,11 +271,6 @@ export default function Gallery() {
     const fileName = fileKey.split("/").pop(); // This removes "photos/" and keeps "DSC_1862.JPG"
 
     try {
-      console.log(
-        "Sending DELETE request to:",
-        process.env.NEXT_PUBLIC_API_URL,
-        `${API_URL}/${fileName}`
-      );
       const response = await fetch(`${API_URL}/api/images/${fileName}`, {
         method: "DELETE",
       });
@@ -389,7 +381,7 @@ export default function Gallery() {
         </div>
       )}
 
-      {isModalOpen && (
+      {isLoginModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
             <UploadMenu
