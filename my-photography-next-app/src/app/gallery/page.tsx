@@ -24,8 +24,8 @@ export default function Gallery() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   // const API_URL = "https://photography-app-azure.vercel.app";
-  //const API_URL = "http://localhost:3001";
-  const API_URL = "https://photography-app-azure.vercel.app";
+  // const API_URL = "http://localhost:3001";
+  const API_URL = "photography-app-azure.vercel.app";
 
   const { data: session } = useSession();
   // const [clientSession, setClientSession] = useState<typeof session | null>(

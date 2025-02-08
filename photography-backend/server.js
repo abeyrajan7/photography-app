@@ -42,8 +42,32 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://photography-app-5osi.vercel.app",
+  "http://photography-app-5osi.vercel.app"
+];
+
 app.use((req, res, next) => {
-  console.log(`📡 ${req.method} ${req.path}`);
+  const origin = req.headers.origin;
+  console.log(`🔍 Incoming request from: ${origin}`);
+
+  if (allowedOrigins.includes(origin)) {
+    console.log(`✅ Origin allowed: ${origin}`);
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  } else {
+    console.log(`❌ Origin not allowed: ${origin}`);
+  }
+
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    console.log(`🚀 Handling preflight request for ${origin}`);
+    return res.sendStatus(200);
+  }
+
   next();
 });
 

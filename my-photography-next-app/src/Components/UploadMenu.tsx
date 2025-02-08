@@ -1,3 +1,4 @@
+require("dotenv").config({ path: "../.env" }); // Load from root
 import React, { useState } from "react";
 import "web-streams-polyfill";
 import dotenv from "dotenv";
@@ -7,8 +8,8 @@ interface UploadMenuProps {
   closeMenu: () => void;
   fetchImages: () => Promise<void>;
 }
-const API_URL = "https://photography-app-azure.vercel.app";
-// const API_URL = "http://localhost:3001";
+// const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = "http://localhost:3001";
 
 const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
