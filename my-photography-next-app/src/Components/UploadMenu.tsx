@@ -8,7 +8,6 @@ interface UploadMenuProps {
   fetchImages: () => Promise<void>;
 }
 // const API_URL = process.env.NEXT_PUBLIC_API_URL;
-// const API_URL = "https://photography-app-azure.vercel.app";
 // const API_URL = "http://localhost:3001";
 const API_URL = "https://photography-app-azure.vercel.app";
 
@@ -41,21 +40,12 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
     formData.append("file", selectedFile); // ✅ Ensure the field name matches backend Multer `upload.single("file")`
 
     try {
-
-
-      const response = await fetch(`${API_URL}/api/image/upload`, {
+      await fetch(`${API_URL}/api/image/upload`, {
         method: "POST",
         body: formData,
-        mode: "cors", // ✅ Ensure CORS is properly handled
+        mode: "no-cors", // ✅ Ensure CORS is properly handled
         credentials: "include", // ✅ Include credentials if needed
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Uploaded to:", data.url);
       alert("File uploaded successfully!");
       await fetchImages();
       closeMenu();
