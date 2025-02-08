@@ -59,7 +59,7 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
     } catch (error) {
       console.error("Upload error:", error);
       alert(
-        "Upload failed: " +
+        "Upload failed from front end: " +
           (error instanceof Error ? error.message : "Unknown error")
       );
     } finally {

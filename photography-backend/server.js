@@ -143,10 +143,9 @@ app.post("/api/image/upload", upload.single("file"), async (req, res) => {
     console.log("Uploaded to:", imageUrl);
 
     // ✅ Ensuring CORS headers are present
-    res.setHeader("Access-Control-Allow-Origin", "*");
     res.json({ success: true, url: imageUrl });
   } catch (error) {
-    console.error("Upload failed:", error);
+    console.error("Upload failed in backend:", error);
     res.status(500).json({ error: error.message });
   }
 });
