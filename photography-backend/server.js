@@ -19,24 +19,26 @@ AWS.config.update({
 const storage = multer.memoryStorage(); // Store files in memory
 const upload = multer({ storage: storage });
 
-// Your S3 bucket name
-const BUCKET_NAME = "framefinder-photography-abey";
 
 
 const allowedOrigins = [
-  "http://localhost:3000", // ✅ Allow local development
-  "https://photography-app-5osi.vercel.app", // ✅ Allow frontend in production
+  "http://localhost:3000", 
+  "https://photography-app-5osi.vercel.app",
 ];
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin); // ✅ Set dynamic origin
-  }
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+  })
+)
 
 
 app.use(express.json());
