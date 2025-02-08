@@ -124,6 +124,7 @@ app.get("/api/images", async (req, res) => {
 
 //upload a new image
 app.post("/api/image/upload", upload.single("file"), async (req, res) => {
+  console.log('reached backend');
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
