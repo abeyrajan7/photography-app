@@ -1,8 +1,8 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { NextAuthOptions } from "next-auth";
+import { authConfig } from "@/lib/auth"; // If you have a separate config
 
-export const authOptions: NextAuthOptions = {
+export const { handlers, auth } = NextAuth({
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -10,7 +10,18 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
-};
+});
 
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+export const GET = handlers.GET;
+export const POST = handlers.POST;
+
+
+
+// GOOGLE_CLIENT_ID=your-google-client-id
+// GOOGLE_CLIENT_SECRET=your-google-client-secret
+// NEXTAUTH_URL=https://your-vercel-app.vercel.app
+// NEXTAUTH_SECRET=your-random-secret
+// DATABASE_URL=your-database-url (if using a DB)
+// AWS_ACCESS_KEY_ID=your-aws-key
+// AWS_SECRET_ACCESS_KEY=your-aws-secret
+// AWS_REGION=your-aws-region
