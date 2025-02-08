@@ -15,17 +15,17 @@ export default function Gallery() {
     likes?: number;
     liked?: boolean;
   };
-  const [modalOpen, setModalOpen] = useState(false);
+  const [displayModalOpen, setDisplayModalOpen] = useState(false);
   const [selectedPicture, setSelectedPicture] = useState<ImageData | null>(
     null
   );
   const [isPortrait, setIsPortrait] = useState(false); // State to track orientation
   const [loadedImages, setLoadedImages] = useState<ImageData[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   // const API_URL = "https://photography-app-azure.vercel.app";
-  // const API_URL = "http://localhost:3001";
-  const API_URL = "https://photography-app-azure.vercel.app";
+  const API_URL = "http://localhost:3001";
+  // const API_URL = "https://photography-app-azure.vercel.app";
 
   const { data: session } = useSession();
   // const [clientSession, setClientSession] = useState<typeof session | null>(
@@ -36,7 +36,7 @@ export default function Gallery() {
     console.log("User session:", session);
 
     if (!session) {
-      setModalOpen(false);
+      setDisplayModalOpen(false);
       setIsLoginModalOpen(true); // Show login modal if not logged in
       return;
     }
@@ -126,7 +126,7 @@ export default function Gallery() {
       console.log(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
       console.log(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET);
       console.log(process.env.NEXT_PUBLIC_NEXTAUTH_URL);
-      setModalOpen(false);
+      setDisplayModalOpen(false);
       setIsLoginModalOpen(true); // Show login modal if not logged in
       return;
     }
@@ -251,21 +251,21 @@ export default function Gallery() {
     image.onload = () => {
       setIsPortrait(image.height > image.width); // Check orientation
       setSelectedPicture(img);
-      setModalOpen(true);
+      setDisplayModalOpen(true);
     };
   };
 
   const closeModal = () => {
-    setModalOpen(false);
+    setDisplayModalOpen(false);
     setSelectedPicture(null);
   };
 
   const openUploadMenu = () => {
-    setIsModalOpen(true);
+    setIsUploadModalOpen(true);
   };
 
   const closeUploadMenu = () => {
-    setIsModalOpen(false);
+    setIsUploadModalOpen(false);
   };
 
   const handleDelete = async (fileKey: string) => {
@@ -297,7 +297,7 @@ export default function Gallery() {
         (prevImages: ImageData[]) =>
           prevImages.filter((img: ImageData) => img.key !== fileKey) //here
       );
-      setModalOpen(false);
+      setDisplayModalOpen(false);
     } catch (error) {
       console.error("Error deleting photo:", error);
       alert("Failed to delete photo. Please try again.");
@@ -334,7 +334,7 @@ export default function Gallery() {
       ) : (
         <p>Loading images...</p>
       )}
-      {modalOpen && (
+      {displayModalOpen && (
         <div className="modal-overlay" onClick={closeModal}>
           <div
             className={`display-modal ${isPortrait ? "portrait" : "landscape"}`}
@@ -394,7 +394,7 @@ export default function Gallery() {
         </div>
       )}
 
-      {isModalOpen && (
+      {isUploadModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
             <UploadMenu

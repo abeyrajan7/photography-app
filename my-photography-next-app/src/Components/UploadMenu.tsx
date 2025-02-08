@@ -6,8 +6,10 @@ dotenv.config();
 
 interface UploadMenuProps {
   closeMenu: () => void;
-  fetchImages: (userEmail?: string | null) => Promise<void>;
+  fetchImages: () => Promise<void>;
 }
+const API_URL = "https://photography-app-azure.vercel.app";
+//const API_URL = "http://localhost:3001";
 
 const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -34,42 +36,28 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
 
     setUploading(true);
 
-    const s3Client = new S3Client({
-      region: process.env.AWS_REGION || "ap-south-1",
-      credentials: {
-        accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID || "",
-        secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY || "",
-      },
-    });
-    const uploadParams = {
-      Bucket: "framefinder-photography-abey",
-      Key: `photos/${selectedFile.name}`,
-      Body: new Uint8Array(await selectedFile.arrayBuffer()),
-      ContentType: selectedFile.type,
-    };
-
-    console.log("Upload Parameters:", uploadParams);
-
-    const url = `https://${uploadParams.Bucket}.s3.ap-south-1.amazonaws.com/${uploadParams.Key}`;
-    console.log("Generated S3 URL:", url);
-    console.log("Client_ID", s3Client);
+    const formData = new FormData();
+    formData.append("file", selectedFile);
 
     try {
-      const command = new PutObjectCommand(uploadParams);
-      console.log("Attempting to upload:", uploadParams);
+      const response = await fetch(`${API_URL}/api/image/upload`, {
+        method: "POST",
+        body: formData,
+      });
 
-      await s3Client.send(command);
-      alert("File uploaded successfully!");
-      await fetchImages();
-      closeMenu();
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Error uploading file:", error.message);
-        alert(`Upload failed: ${error.message}`);
+      const data = await response.json();
+
+      if (data.success) {
+        console.log("Uploaded to:", data.url);
+        alert("File uploaded successfully!");
+        await fetchImages();
+        closeMenu();
       } else {
-        console.error("Unexpected error:", error);
-        alert("Upload failed: Unknown error");
+        throw new Error(data.error || "Upload failed");
       }
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("Upload failed: " + error);
     } finally {
       setUploading(false);
     }

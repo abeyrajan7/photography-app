@@ -1,6 +1,7 @@
 require("dotenv").config({ path: "../.env" }); // Load from root
-// console.log("Backend API URL:", process.env.NEXT_PUBLIC_API_URL);
-// console.log("Database URL:", process.env.DATABASE_URL);
+console.log("Database URL:", process.env.DATABASE_URL);
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+
 
 const AWS = require("aws-sdk");
 
@@ -9,16 +10,20 @@ AWS.config.update({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: process.env.AWS_REGION || "ap-south-1", // Useedd fallback if .env is not loaded
 });
-
+const multer = require("multer");
+const cors = require("cors");
 const express = require("express");
 const app = express();
 const port = 3001;
 const { Client } = require('pg');
 const { Pool } = require("pg");
 
+const storage = multer.memoryStorage(); // Store files in memory
+const upload = multer({ storage: storage });
+
 // Your S3 bucket name
 const BUCKET_NAME = "framefinder-photography-abey";
-const cors = require("cors");
+
 app.use(cors());
 const s3 = new AWS.S3();
 
@@ -27,6 +32,15 @@ const client = new Client({
   connectionString: process.env.DATABASE_URL, // Use your Neon connection URL
 });
 client.connect();
+
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION || "ap-south-1",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
+  },
+});
+
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL, // Ensure this is set in `.env`
@@ -119,6 +133,35 @@ app.get("/api/images", async (req, res) => {
     res.status(500).json({ error: "Database error" });
   }
 });
+
+//upload a new image
+app.post("/api/image/upload", upload.single("file"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+    const uploadParams = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: `photos/${req.file.originalname}`,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+    };
+
+    console.log("Uploading file:", uploadParams);
+    
+    
+    await s3Client.send(new PutObjectCommand(uploadParams));
+
+    const imageUrl = `https://${uploadParams.Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
+    console.log("Uploaded to:", imageUrl);
+
+    res.json({ success: true, url: imageUrl });
+  } catch (error) {
+    console.error("Upload failed:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 // delete an image
 app.delete("/api/images/:fileKey", async (req, res) => {
