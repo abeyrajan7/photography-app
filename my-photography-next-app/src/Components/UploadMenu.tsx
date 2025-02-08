@@ -8,7 +8,7 @@ interface UploadMenuProps {
   fetchImages: () => Promise<void>;
 }
 const API_URL = "https://photography-app-azure.vercel.app";
-//const API_URL = "http://localhost:3001";
+// const API_URL = "http://localhost:3001";
 
 const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -47,7 +47,6 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
       const data = await response.json();
 
       if (data.success) {
-        console.log("Uploaded to:", data.url);
         alert("File uploaded successfully!");
         await fetchImages();
         closeMenu();

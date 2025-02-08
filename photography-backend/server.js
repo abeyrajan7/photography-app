@@ -1,15 +1,6 @@
 require("dotenv").config({ path: "../.env" }); // Load from root
-console.log("Database URL:", process.env.DATABASE_URL);
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
-
-
 const AWS = require("aws-sdk");
-
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION || "ap-south-1", // Useedd fallback if .env is not loaded
-});
 const multer = require("multer");
 const cors = require("cors");
 const express = require("express");
@@ -18,16 +9,39 @@ const port = 3001;
 const { Client } = require('pg');
 const { Pool } = require("pg");
 
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION || "ap-south-1", // Useedd fallback if .env is not loaded
+});
+
+
 const storage = multer.memoryStorage(); // Store files in memory
 const upload = multer({ storage: storage });
 
 // Your S3 bucket name
 const BUCKET_NAME = "framefinder-photography-abey";
 
-app.use(cors());
-const s3 = new AWS.S3();
+
+const allowedOrigins = [
+  "http://localhost:3000", // ✅ Allow local development
+  "https://photography-app-5osi.vercel.app", // ✅ Allow frontend in production
+];
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin); // ✅ Set dynamic origin
+  }
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
+
 
 app.use(express.json());
+
+const s3 = new AWS.S3();
 const client = new Client({
   connectionString: process.env.DATABASE_URL, // Use your Neon connection URL
 });
@@ -64,8 +78,7 @@ app.get("/", (req, res) => {
 app.get("/api/images", async (req, res) => {
   const bucketName = "framefinder-photography-abey"; // Your bucket name
   const prefix = "photos/"; // Folder prefix if images are stored in a folder
-  const user_id = req.query.user_id; // Logged-in user's email
-  // console.log('logged In user', user_id);
+  const user_id = req.query.user_id; 
 
 
   const params = {
@@ -101,24 +114,16 @@ app.get("/api/images", async (req, res) => {
     // Fetch user's liked images (if logged in)
     let likedImages = new Set();
     if (user_id) {
-      // console.log("🔍 Fetching likes for user:", user_id);
     
       const likesResult = await pool.query(
         "SELECT post_url FROM likes WHERE user_id = $1",
         [user_id]
       );
     
-      // console.log("🛠️ Raw likes result:", likesResult.rows); // Log the actual result from DB
     
       likedImages = new Set(likesResult.rows.map((row) => row.post_url));
     
-      // console.log("✅ User's liked images:", likedImages); // Should now contain image keys
     }
-    
-    // console.log("User's liked images:", likedImages);
-
-
-
     // Update images with like count and liked status
     images = images.map((img) => ({
       ...img,
@@ -126,7 +131,6 @@ app.get("/api/images", async (req, res) => {
       liked: likedImages.has(img.key), // Check if the user liked this image
     }));
 
-    // console.log("Final images with likes:", images);
     
     res.json({ success: true, message: "Fetched images with like counts", data: images });
   } catch (error) {
@@ -140,6 +144,7 @@ app.post("/api/image/upload", upload.single("file"), async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
+
     const uploadParams = {
       Bucket: process.env.AWS_BUCKET_NAME,
       Key: `photos/${req.file.originalname}`,
@@ -148,13 +153,12 @@ app.post("/api/image/upload", upload.single("file"), async (req, res) => {
     };
 
     console.log("Uploading file:", uploadParams);
-    
-    
     await s3Client.send(new PutObjectCommand(uploadParams));
 
     const imageUrl = `https://${uploadParams.Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
     console.log("Uploaded to:", imageUrl);
 
+    // res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
     res.json({ success: true, url: imageUrl });
   } catch (error) {
     console.error("Upload failed:", error);
@@ -172,7 +176,6 @@ app.delete("/api/images/:fileKey", async (req, res) => {
   }
 
   const fullKey = `photos/${fileKey}`;
-  console.log("Attempting to delete file:", fullKey);
 
   const params = {
     Bucket: process.env.AWS_BUCKET_NAME || "framefinder-photography-abey", // Use env variable
@@ -201,7 +204,6 @@ app.delete("/api/images/:fileKey", async (req, res) => {
 app.delete("/api/unlike", async (req, res) => {
   try {
     const { user_id, image_key } = req.body; // Extract JSON body
-    console.log("🚨 Unlike Request Received:", req.body); // Debugging
 
     if (!user_id || !image_key) {
       return res.status(400).json({ error: "Missing required fields: user_id or image_key" });
@@ -227,7 +229,6 @@ app.delete("/api/unlike", async (req, res) => {
 
 app.post("/api/like", async (req, res) => {
   const { user_id, image_key } = req.body; // Access JSON body
-  console.log("Request Body:", req.body); // Debugging
 
   if (!user_id || !image_key) {
     return res.status(400).json({ error: "Missing required fields: user_id or image_key" });
