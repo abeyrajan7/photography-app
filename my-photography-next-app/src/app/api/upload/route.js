@@ -54,11 +54,10 @@ export async function POST(req) {
 }
 
 // ✅ Required for handling file uploads in the App Router
-
 export const config = {
   api: {
-    bodyParser: {
-      sizeLimit: "10mb",
-    },
+    bodyParser: false,
   },
 };
+
+
