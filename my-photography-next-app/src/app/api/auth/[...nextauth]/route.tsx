@@ -9,6 +9,7 @@ const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async session({ session, token }) {
       if (token.email) session.user.email = token.email; // Ensure token.email exists

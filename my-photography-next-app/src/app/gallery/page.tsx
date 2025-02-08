@@ -123,6 +123,9 @@ export default function Gallery() {
 
     if (!session) {
       console.log("User is not logged in, opening login modal...");
+      console.log(process.env.GOOGLE_CLIENT_ID);
+      console.log(process.env.GOOGLE_CLIENT_SECRET);
+      console.log(process.env.NEXTAUTH_URL);
       setModalOpen(false);
       setIsLoginModalOpen(true); // Show login modal if not logged in
       return;
