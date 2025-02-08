@@ -36,26 +36,34 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
     setUploading(true);
 
     const formData = new FormData();
-    formData.append("file", selectedFile);
+    formData.append("file", selectedFile); // ✅ Ensure the key matches backend Multer field
 
     try {
+      console.log("Uploading to:", `${API_URL}/api/image/upload`);
       const response = await fetch(`${API_URL}/api/image/upload`, {
         method: "POST",
         body: formData,
+        mode: "cors", // ✅ Ensure CORS is properly handled
+        credentials: "include", // ✅ Include credentials if needed
       });
 
-      const data = await response.json();
-
-      if (data.success) {
-        alert("File uploaded successfully!");
-        await fetchImages();
-        closeMenu();
-      } else {
-        throw new Error(data.error || "Upload failed");
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
+      const data = await response.json();
+      console.log("Uploaded to:", data.url);
+      alert("File uploaded successfully!");
+      await fetchImages();
+      closeMenu();
     } catch (error) {
-      console.error("Upload error:", error);
-      alert("Upload failed: " + error);
+      if (error instanceof Error) {
+        console.error("Upload error:", error.message);
+        alert("Upload failed: " + error.message);
+      } else {
+        console.error("Upload error:", error);
+        alert("Upload failed: Unknown error occurred.");
+      }
     } finally {
       setUploading(false);
     }
