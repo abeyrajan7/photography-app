@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import "web-streams-polyfill";
 import dotenv from "dotenv";
 dotenv.config();
