@@ -1,7 +1,7 @@
 require("dotenv").config({ path: "../.env" }); // Load from root
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client } = require("@aws-sdk/client-s3");
 const AWS = require("aws-sdk");
-const multer = require("multer");
+// const multer = require("multer");
 const cors = require("cors");
 const express = require("express");
 const app = express();
@@ -15,16 +15,13 @@ AWS.config.update({
   region: process.env.AWS_REGION || "ap-south-1",
 });
 
-const storage = multer.memoryStorage(); // Store files in memory
-const upload = multer({ storage: storage });
+// const storage = multer.memoryStorage(); 
+// const upload = multer({ storage: storage });
 
 
 app.use(express.json());
 
-app.use(cors({
-  origin: ["http://localhost:3000", "photography-app-5osi.vercel.app", "https://photography-app-5osi.vercel.app"],
-  credentials: true // ✅ Allow cookies and authentication if needed
-}));
+app.use(cors());
 
 const s3 = new AWS.S3();
 const client = new Client({
@@ -48,33 +45,28 @@ const pool = new Pool({
 });
 
 
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://photography-app-5osi.vercel.app",
-  "http://photography-app-5osi.vercel.app",
-];
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  console.log(`🔍 Incoming request from: ${origin}`);
+// app.use((req, res, next) => {
+//   const origin = req.headers.origin;
+//   console.log(`🔍 Incoming request from: ${origin}`);
 
-  if (allowedOrigins.includes(origin)) {
-    console.log(`✅ Origin allowed: ${origin}`);
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  } else {
-    console.log(`❌ Origin not allowed: ${origin}`);
-  }
+//   if (allowedOrigins.includes(origin)) {
+//     console.log(`✅ Origin allowed: ${origin}`);
+//     res.setHeader("Access-Control-Allow-Origin", origin);
+//   } else {
+//     console.log(`❌ Origin not allowed: ${origin}`);
+//   }
 
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+//   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  if (req.method === "OPTIONS") {
-    console.log(`🚀 Handling preflight request for ${origin}`);
-    return res.sendStatus(200);
-  }
+//   if (req.method === "OPTIONS") {
+//     console.log(`🚀 Handling preflight request for ${origin}`);
+//     return res.sendStatus(200);
+//   }
 
-  next();
-});
+//   next();
+// });
 
 pool.on("error", (err) => {
   console.error("Unexpected PostgreSQL pool error:", err);
@@ -86,6 +78,34 @@ app.get("/", (req, res) => {
 });
 
 
+//upload a new image
+// app.post("/api/image/upload", upload.single("file"), async (req, res) => {
+//   console.log('reached backend');
+//   try {
+//     if (!req.file) {
+//       return res.status(400).json({ error: "No file uploaded" });
+//     }
+
+//     const uploadParams = {
+//       Bucket: process.env.AWS_BUCKET_NAME,
+//       Key: `photos/${req.file.originalname}`,
+//       Body: req.file.buffer,
+//       ContentType: req.file.mimetype,
+//     };
+
+//     console.log("Uploading file:", uploadParams);
+//     await s3Client.send(new PutObjectCommand(uploadParams));
+
+//     const imageUrl = `https://${uploadParams.Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
+//     console.log("Uploaded to:", imageUrl);
+
+//     // ✅ Ensuring CORS headers are present
+//     res.json({ success: true, url: imageUrl });
+//   } catch (error) {
+//     console.error("Upload failed in backend:", error);
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
 // get all images
 app.get("/api/images", async (req, res) => {
@@ -151,34 +171,6 @@ app.get("/api/images", async (req, res) => {
   }
 });
 
-//upload a new image
-app.post("/api/image/upload", upload.single("file"), async (req, res) => {
-  console.log('reached backend');
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded" });
-    }
-
-    const uploadParams = {
-      Bucket: process.env.AWS_BUCKET_NAME,
-      Key: `photos/${req.file.originalname}`,
-      Body: req.file.buffer,
-      ContentType: req.file.mimetype,
-    };
-
-    console.log("Uploading file:", uploadParams);
-    await s3Client.send(new PutObjectCommand(uploadParams));
-
-    const imageUrl = `https://${uploadParams.Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
-    console.log("Uploaded to:", imageUrl);
-
-    // ✅ Ensuring CORS headers are present
-    res.json({ success: true, url: imageUrl });
-  } catch (error) {
-    console.error("Upload failed in backend:", error);
-    res.status(500).json({ error: error.message });
-  }
-});
 
 
 

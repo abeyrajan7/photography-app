@@ -1,60 +1,61 @@
-import React, { useState } from "react";
-import "web-streams-polyfill";
-import dotenv from "dotenv";
-dotenv.config();
+import { useState } from "react";
 
-interface UploadMenuProps {
+interface UploadComponentProps {
+  fetchImages: () => void;
   closeMenu: () => void;
-  fetchImages: () => Promise<void>;
 }
-// const API_URL = process.env.NEXT_PUBLIC_API_URL;
-// const API_URL = "http://localhost:3001";
-const API_URL = "https://photography-app-azure.vercel.app";
 
-const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
+const UploadComponent: React.FC<UploadComponentProps> = ({
+  fetchImages,
+  closeMenu,
+}) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
+  const [uploading, setUploading] = useState<boolean>(false);
 
+  // ✅ Define event type correctly
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const file = event.target.files?.[0]; // Optional chaining to avoid null errors
     if (file) {
-      const allowedTypes = ["image/jpeg", "image/png"];
-      if (allowedTypes.includes(file.type)) {
-        setSelectedFile(file);
-      } else {
-        alert("Only JPG and PNG files are allowed.");
-        event.target.value = ""; // Clear the file input
-      }
+      setSelectedFile(file);
     }
   };
 
+  // ✅ Handle file upload
   const handleUpload = async () => {
     if (!selectedFile) {
-      alert("Please choose a file before uploading.");
+      alert("Please select a file first!");
       return;
     }
 
     setUploading(true);
 
     const formData = new FormData();
-    formData.append("file", selectedFile); // ✅ Ensure the field name matches backend Multer `upload.single("file")`
+    formData.append("file", selectedFile);
 
     try {
-      await fetch(`${API_URL}/api/image/upload`, {
+      const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
-        mode: "no-cors", // ✅ Ensure CORS is properly handled
-        credentials: "include", // ✅ Include credentials if needed
       });
-      alert("File uploaded successfully!");
-      await fetchImages();
+
+      if (!response.ok) {
+        throw new Error(`Upload failed! Status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Upload successful:", result);
+      alert(`File uploaded successfully`);
+
+      // ✅ Refresh images after upload
+      fetchImages();
+
+      // ✅ Close the upload menu
       closeMenu();
+      // ✅ Reset file selection
+      setSelectedFile(null);
     } catch (error) {
       console.error("Upload error:", error);
-      alert(
-        "Upload failed from front end: " +
-          (error instanceof Error ? error.message : "Unknown error")
-      );
+      alert("File upload failed. Please try again.");
     } finally {
       setUploading(false);
     }
@@ -94,4 +95,4 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
   );
 };
 
-export default UploadMenu;
+export default UploadComponent;

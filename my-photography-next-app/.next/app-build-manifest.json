@@ -1,63 +1,31 @@
 {
   "pages": {
-    "/_not-found/page": [
-      "static/chunks/webpack-28174a31ee32f86a.js",
-      "static/chunks/4bd1b696-dc53661a9e7a1ea0.js",
-      "static/chunks/517-6fd397a5a924557d.js",
-      "static/chunks/main-app-9b94aaf14efe48fc.js",
-      "static/chunks/app/_not-found/page-7b9967b815b28552.js"
-    ],
     "/layout": [
-      "static/chunks/webpack-28174a31ee32f86a.js",
-      "static/chunks/4bd1b696-dc53661a9e7a1ea0.js",
-      "static/chunks/517-6fd397a5a924557d.js",
-      "static/chunks/main-app-9b94aaf14efe48fc.js",
-      "static/css/00197e5555884eef.css",
-      "static/chunks/8e1d74a4-1e094499ba61662a.js",
-      "static/chunks/615-3d77fc839148ad9c.js",
-      "static/chunks/app/layout-d0ae1ea4d15f0503.js"
-    ],
-    "/api/auth/[...nextauth]/route": [
-      "static/chunks/webpack-28174a31ee32f86a.js",
-      "static/chunks/4bd1b696-dc53661a9e7a1ea0.js",
-      "static/chunks/517-6fd397a5a924557d.js",
-      "static/chunks/main-app-9b94aaf14efe48fc.js",
-      "static/chunks/app/api/auth/[...nextauth]/route-4d8a9e8502b4ce21.js"
-    ],
-    "/about/page": [
-      "static/chunks/webpack-28174a31ee32f86a.js",
-      "static/chunks/4bd1b696-dc53661a9e7a1ea0.js",
-      "static/chunks/517-6fd397a5a924557d.js",
-      "static/chunks/main-app-9b94aaf14efe48fc.js",
-      "static/css/6095a142957330dc.css",
-      "static/chunks/465-abfe768b710d09db.js",
-      "static/chunks/app/about/page-6e39cf462160300c.js"
-    ],
-    "/gallery/page": [
-      "static/chunks/webpack-28174a31ee32f86a.js",
-      "static/chunks/4bd1b696-dc53661a9e7a1ea0.js",
-      "static/chunks/517-6fd397a5a924557d.js",
-      "static/chunks/main-app-9b94aaf14efe48fc.js",
-      "static/css/07efe0f77098d952.css",
-      "static/chunks/870fdd6f-1feaddadc6060b0f.js",
-      "static/chunks/aaea2bcf-3878b47eda35ec9e.js",
-      "static/chunks/615-3d77fc839148ad9c.js",
-      "static/chunks/33-72a1ce4a5989e8eb.js",
-      "static/chunks/app/gallery/page-dd44f090cc7796a6.js"
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/layout.css",
+      "static/chunks/app/layout.js"
     ],
     "/page": [
-      "static/chunks/webpack-28174a31ee32f86a.js",
-      "static/chunks/4bd1b696-dc53661a9e7a1ea0.js",
-      "static/chunks/517-6fd397a5a924557d.js",
-      "static/chunks/main-app-9b94aaf14efe48fc.js",
-      "static/chunks/app/page-a9a2e18ae3dca783.js"
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/page.js"
     ],
-    "/contact/page": [
-      "static/chunks/webpack-28174a31ee32f86a.js",
-      "static/chunks/4bd1b696-dc53661a9e7a1ea0.js",
-      "static/chunks/517-6fd397a5a924557d.js",
-      "static/chunks/main-app-9b94aaf14efe48fc.js",
-      "static/chunks/app/contact/page-b2d03470086bc78e.js"
+    "/gallery/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/gallery/page.css",
+      "static/chunks/app/gallery/page.js"
+    ],
+    "/api/auth/[...nextauth]/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/auth/[...nextauth]/route.js"
+    ],
+    "/api/upload/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/upload/route.js"
     ]
   }
 }
