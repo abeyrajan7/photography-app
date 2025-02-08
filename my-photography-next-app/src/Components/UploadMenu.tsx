@@ -1,4 +1,3 @@
-require("dotenv").config({ path: "../.env" }); // Load from root
 import React, { useState } from "react";
 import "web-streams-polyfill";
 import dotenv from "dotenv";
