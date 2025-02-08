@@ -22,7 +22,7 @@ const upload = multer({ storage: storage });
 app.use(express.json());
 
 app.use(cors({
-  origin: ["http://localhost:3000", "photography-app-5osi.vercel.app"],
+  origin: ["http://localhost:3000", "photography-app-5osi.vercel.app", "https://photography-app-5osi.vercel.app"],
   credentials: true // ✅ Allow cookies and authentication if needed
 }));
 
