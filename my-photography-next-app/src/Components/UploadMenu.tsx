@@ -41,7 +41,8 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
     formData.append("file", selectedFile); // ✅ Ensure the field name matches backend Multer `upload.single("file")`
 
     try {
-      console.log("Uploading to:", `${API_URL}/api/image/upload`);
+
+
       const response = await fetch(`${API_URL}/api/image/upload`, {
         method: "POST",
         body: formData,
