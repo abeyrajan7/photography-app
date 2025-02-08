@@ -21,6 +21,11 @@ const upload = multer({ storage: storage });
 
 app.use(express.json());
 
+app.use(cors({
+  origin: ["http://localhost:3000", "photography-app-5osi.vercel.app"],
+  credentials: true // ✅ Allow cookies and authentication if needed
+}));
+
 const s3 = new AWS.S3();
 const client = new Client({
   connectionString: process.env.DATABASE_URL, // Use your Neon connection URL
@@ -46,7 +51,7 @@ const pool = new Pool({
 const allowedOrigins = [
   "http://localhost:3000",
   "https://photography-app-5osi.vercel.app",
-  "http://photography-app-5osi.vercel.app"
+  "http://photography-app-5osi.vercel.app",
 ];
 
 app.use((req, res, next) => {
