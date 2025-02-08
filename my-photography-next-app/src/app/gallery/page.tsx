@@ -75,7 +75,7 @@ export default function Gallery() {
 
     try {
       // ✅ Step 2: Send API Request to Update Backend
-      const response = await fetch("http://localhost:3001/api/unlike", {
+      const response = await fetch(`${API_URL}/api/unlike`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userEmail, image_key: imageKey }),
@@ -122,6 +122,7 @@ export default function Gallery() {
     console.log("User session:", session);
 
     if (!session) {
+      console.log("User is not logged in, opening login modal...");
       setModalOpen(false);
       setIsLoginModalOpen(true); // Show login modal if not logged in
       return;
@@ -161,7 +162,7 @@ export default function Gallery() {
 
     try {
       // ✅ Step 2: Send API Request to Update Backend
-      const response = await fetch("http://localhost:3001/api/like", {
+      const response = await fetch(`${API_URL}/api/like`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userEmail, image_key: imageKey }),
