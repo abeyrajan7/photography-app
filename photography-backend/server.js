@@ -6,62 +6,17 @@ const cors = require("cors");
 const express = require("express");
 const app = express();
 const port = 3001;
-const { Client } = require('pg');
-const { Pool } = require("pg");
+const { Client, Pool } = require("pg");
+
 
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION || "ap-south-1", // Useedd fallback if .env is not loaded
+  region: process.env.AWS_REGION || "ap-south-1",
 });
-
 
 const storage = multer.memoryStorage(); // Store files in memory
 const upload = multer({ storage: storage });
-
-
-
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://photography-app-5osi.vercel.app"
-];
-
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  console.log(`🔍 Incoming request from origin: ${origin}`);
-
-  if (allowedOrigins.includes(origin)) {
-    console.log(`✅ Origin allowed: ${origin}`);
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  } else {
-    console.log(`❌ Origin not allowed: ${origin}`);
-  }
-
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  if (req.method === "OPTIONS") {
-    console.log(`🚀 Handling preflight request for ${origin}`);
-    return res.sendStatus(200);
-  }
-
-  next();
-});
-
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
-  })
-)
 
 
 app.use(express.json());
@@ -71,6 +26,7 @@ const client = new Client({
   connectionString: process.env.DATABASE_URL, // Use your Neon connection URL
 });
 client.connect();
+
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION || "ap-south-1",
@@ -82,10 +38,13 @@ const s3Client = new S3Client({
 
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL, // Ensure this is set in `.env`
-  ssl: {
-    rejectUnauthorized: false, // Required for managed databases like Neon.tech
-  },
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+});
+
+app.use((req, res, next) => {
+  console.log(`📡 ${req.method} ${req.path}`);
+  next();
 });
 
 pool.on("error", (err) => {
@@ -183,13 +142,15 @@ app.post("/api/image/upload", upload.single("file"), async (req, res) => {
     const imageUrl = `https://${uploadParams.Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
     console.log("Uploaded to:", imageUrl);
 
-    // res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
+    // ✅ Ensuring CORS headers are present
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.json({ success: true, url: imageUrl });
   } catch (error) {
     console.error("Upload failed:", error);
     res.status(500).json({ error: error.message });
   }
 });
+
 
 
 // delete an image

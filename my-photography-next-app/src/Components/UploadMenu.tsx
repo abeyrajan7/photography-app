@@ -36,7 +36,7 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
     setUploading(true);
 
     const formData = new FormData();
-    formData.append("file", selectedFile); // ✅ Ensure the key matches backend Multer field
+    formData.append("file", selectedFile); // ✅ Ensure the field name matches backend Multer `upload.single("file")`
 
     try {
       console.log("Uploading to:", `${API_URL}/api/image/upload`);
@@ -57,13 +57,11 @@ const UploadMenu: React.FC<UploadMenuProps> = ({ closeMenu, fetchImages }) => {
       await fetchImages();
       closeMenu();
     } catch (error) {
-      if (error instanceof Error) {
-        console.error("Upload error:", error.message);
-        alert("Upload failed: " + error.message);
-      } else {
-        console.error("Upload error:", error);
-        alert("Upload failed: Unknown error occurred.");
-      }
+      console.error("Upload error:", error);
+      alert(
+        "Upload failed: " +
+          (error instanceof Error ? error.message : "Unknown error")
+      );
     } finally {
       setUploading(false);
     }
