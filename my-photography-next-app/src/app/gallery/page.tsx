@@ -38,7 +38,7 @@ export default function Gallery() {
   const API_URL = "https://photography-app-azure.vercel.app";
 
   const { data: session } = useSession();
-  const loggedInUser = session?.user?.email;
+  const loggedInUser = session?.user?.email || "";
 
   const handleSendComment = async (imageKey: string) => {
     if (!newComment.trim()) return; // ✅ Prevent empty comments
@@ -351,6 +351,15 @@ export default function Gallery() {
   };
 
   const openUploadMenu = () => {
+    if (
+      !(
+        loggedInUser == process.env.NEXT_PUBLIC_BOSS_EMAIL_1 ||
+        loggedInUser == process.env.NEXT_PUBLIC_BOSS_EMAIL_2
+      )
+    ) {
+      alert("Sorry Only BOSS is allowed to upload Images");
+      return;
+    }
     setIsUploadModalOpen(true);
   };
 
@@ -519,10 +528,15 @@ export default function Gallery() {
                     </li>
                   )}
                   <li onClick={handleComment}>Comment</li>
-                  <li onClick={() => handleDelete(selectedPicture?.key || "")}>
-                    {/* <FontAwesomeIcon icon={faTrash} />  */}
-                    Delete
-                  </li>
+                  {(loggedInUser === process.env.NEXT_PUBLIC_BOSS_EMAIL_1 ||
+                    loggedInUser === process.env.NEXT_PUBLIC_BOSS_EMAIL_2) && (
+                    <li
+                      onClick={() => handleDelete(selectedPicture?.key || "")}
+                    >
+                      {/* <FontAwesomeIcon icon={faTrash} />  */}
+                      Delete
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>
