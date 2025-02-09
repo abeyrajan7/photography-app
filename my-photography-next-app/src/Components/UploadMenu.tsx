@@ -29,32 +29,44 @@ const UploadComponent: React.FC<UploadComponentProps> = ({
 
     setUploading(true);
 
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-
     try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
+      // ✅ Step 1: Get a Presigned URL from Next.js API
+      const response = await fetch(
+        `/api/upload?filename=${encodeURIComponent(
+          selectedFile.name
+        )}&fileType=${encodeURIComponent(selectedFile.type)}`,
+        { method: "GET" }
+      );
+
+      if (!response.ok) throw new Error("Failed to get presigned URL");
+
+      const { uploadUrl, fileUrl } = await response.json();
+
+      console.log("🔗 Presigned URL:", uploadUrl);
+
+      // ✅ Step 2: Upload the file directly to S3
+      const uploadResponse = await fetch(uploadUrl, {
+        method: "PUT",
+        body: selectedFile,
+        headers: { "Content-Type": selectedFile.type },
       });
 
-      if (!response.ok) {
-        throw new Error(`Upload failed! Status: ${response.status}`);
-      }
+      if (!uploadResponse.ok) throw new Error("S3 upload failed");
 
-      const result = await response.json();
-      console.log("Upload successful:", result);
-      alert(`File uploaded successfully`);
+      console.log("✅ File uploaded to S3:", fileUrl);
+
+      alert(`File uploaded successfully!`);
 
       // ✅ Refresh images after upload
-      fetchImages();
+      if (fetchImages) fetchImages();
 
-      // ✅ Close the upload menu
+      // ✅ Close upload menu
       closeMenu();
+
       // ✅ Reset file selection
       setSelectedFile(null);
     } catch (error) {
-      console.error("Upload error:", error);
+      console.error("🚨 Upload error:", error);
       alert("File upload failed. Please try again.");
     } finally {
       setUploading(false);

@@ -8,6 +8,10 @@ const app = express();
 const port = 3001;
 const { Client, Pool } = require("pg");
 
+if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY || !process.env.AWS_BUCKET_NAME || !process.env.AWS_REGION) {
+  console.error("🚨 Missing AWS credentials in environment variables");
+  throw new Error("AWS credentials are not set in environment variables.");
+}
 
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
