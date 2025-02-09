@@ -7,7 +7,6 @@ import image from "../../../public/aboutImages/about_abey.jpeg";
 export default function About() {
   return (
     <div className="about-container">
-      {/* Bio Section */}
       <div className="about-box bio-section">
         <div className="profile-photo">
           <Image src={image} alt="Abey K Rajan" width={150} height={150} />

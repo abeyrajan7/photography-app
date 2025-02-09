@@ -259,14 +259,13 @@
 .delete-option {
   bottom: -80%;
   position: relative;
-  left: -34%;
+  left: 0px;
   cursor: pointer;
   color: black;
 }
 
 .delete-option :hover{
   color: rgb(154, 54, 54);
-  
 }
 
 .comment-delete-btn {
@@ -371,13 +370,13 @@
   color: black;
 }
 
-@media (min-width: 320px) and (max-width: 425px) {
+/* @media (min-width: 320px) and (max-width: 425px) {
   .like-delete.portrait {
     left: auto;
     bottom: -26px;
     font-size: 12px;
 }
-}
+} */
 
 @media (max-width: 768px) {
   .photo {
