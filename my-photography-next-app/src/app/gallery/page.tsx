@@ -67,7 +67,7 @@ export default function Gallery() {
     setIsCommentBoxOpen(false); // ✅ Close comment box
 
     try {
-      const response = await fetch(`http://localhost:3001/api/comment`, {
+      const response = await fetch(`${API_URL}/api/comment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
