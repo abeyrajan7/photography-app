@@ -371,7 +371,13 @@
   color: black;
 }
 
-
+@media (min-width: 320px) and (max-width: 425px) {
+  .like-delete.portrait {
+    left: auto;
+    bottom: -26px;
+    font-size: 12px;
+}
+}
 
 @media (max-width: 768px) {
   .photo {
