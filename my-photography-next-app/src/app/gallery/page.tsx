@@ -34,8 +34,8 @@ export default function Gallery() {
   const [isCommentBoxOpen, setIsCommentBoxOpen] = useState(false);
   const [newComment, setNewComment] = useState("");
   // const API_URL = "https://photography-app-azure.vercel.app";
-  const API_URL = "http://localhost:3001";
-  // const API_URL = "https://photography-app-azure.vercel.app";
+  // const API_URL = "http://localhost:3001";
+  const API_URL = "https://photography-app-azure.vercel.app";
 
   const { data: session } = useSession();
   const loggedInUser = session?.user?.email;
