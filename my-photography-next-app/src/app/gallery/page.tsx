@@ -78,6 +78,9 @@ export default function Gallery() {
       });
 
       if (!response.ok) throw new Error("Failed to add comment");
+      else {
+        fetchImages();
+      }
 
       setNewComment(""); // ✅ Clear input
       setIsCommentBoxOpen(false); // ✅ Close modal after submitting
