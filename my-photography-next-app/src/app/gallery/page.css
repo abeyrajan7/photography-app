@@ -379,14 +379,15 @@
 } */
 
 @media (max-width: 768px) {
+  
   .photo {
     width: calc(45% - 10px);
   }
   
   .like-delete.portrait {
-    top: 38%;
-  }
-
+    font-size: 12px;
+    top: 15%;
+}
   .likes {
     white-space: nowrap; /* ✅ Prevents line breaks */
     display: inline-block;
@@ -395,10 +396,10 @@
 
   .like-delete.landscape {
     display: inline-flex;
-    left: -92%;
+    left: -100%;
     gap: 4%;
-    top: 44%;
-    font-size: smaller;
+    top: 41%;
+    font-size: 12px;
 }
 
   .display-modal{
@@ -468,9 +469,14 @@
 
 
   .comment-text {
-      all: unset;
-      margin-bottom: 16%;
-  }
+    all: unset;
+    margin-bottom: 16%;
+    padding: 1px;
+    font-size: 10px;
+    position: relative;
+    left: -1px;
+    border-bottom: 1px solid black;
+}
 
   .landscape-comment-text{
     all: unset;
