@@ -28,9 +28,6 @@ export default function Gallery() {
   const API_URL = "https://photography-app-azure.vercel.app";
 
   const { data: session } = useSession();
-  // const [clientSession, setClientSession] = useState<typeof session | null>(
-  //   null
-  // );
 
   async function handleUnlike(imageKey: string) {
     console.log("User session:", session);

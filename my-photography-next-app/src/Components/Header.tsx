@@ -4,14 +4,14 @@ import React from "react";
 import "./Header.css";
 import { useState } from "react";
 import { FaBars } from "react-icons/fa";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 
 export default function Header() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("/about");
   const [menuOpen, setMenuOpen] = useState(false);
   const { data: session } = useSession();
+  const pathname = usePathname();
   // const { data: session } = useSession();
 
   async function handleLogout() {
@@ -19,7 +19,6 @@ export default function Header() {
   }
 
   const handleNavigation = (path: string) => {
-    setActiveTab(path);
     router.push(path);
     setMenuOpen(false);
   };
@@ -33,13 +32,13 @@ export default function Header() {
       <ul className={`nav-items ${menuOpen ? "open" : ""}`}>
         <li
           onClick={() => handleNavigation("/about")}
-          className={activeTab === "/about" ? "active-tab" : ""}
+          className={pathname === "/about" ? "active-tab" : ""}
         >
           About
         </li>
         <li
           onClick={() => handleNavigation("/gallery")}
-          className={activeTab === "/gallery" ? "active-tab" : " "}
+          className={pathname === "/gallery" ? "active-tab" : ""}
         >
           Photography
         </li>
