@@ -68,11 +68,13 @@
         border-radius: 5px;
         height: 150%;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+        gap: 11%;
+        height: 180%;
     }
 
     .nav-items.open {
         display: flex;
-        margin-left: -2%;
+        margin-left: -1%;
     }
 
     .nav-items li {

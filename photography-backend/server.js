@@ -81,36 +81,6 @@ app.get("/", (req, res) => {
   res.send("Welcome to the backend!");
 });
 
-
-//upload a new image
-// app.post("/api/image/upload", upload.single("file"), async (req, res) => {
-//   console.log('reached backend');
-//   try {
-//     if (!req.file) {
-//       return res.status(400).json({ error: "No file uploaded" });
-//     }
-
-//     const uploadParams = {
-//       Bucket: process.env.AWS_BUCKET_NAME,
-//       Key: `photos/${req.file.originalname}`,
-//       Body: req.file.buffer,
-//       ContentType: req.file.mimetype,
-//     };
-
-//     console.log("Uploading file:", uploadParams);
-//     await s3Client.send(new PutObjectCommand(uploadParams));
-
-//     const imageUrl = `https://${uploadParams.Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
-//     console.log("Uploaded to:", imageUrl);
-
-//     // ✅ Ensuring CORS headers are present
-//     res.json({ success: true, url: imageUrl });
-//   } catch (error) {
-//     console.error("Upload failed in backend:", error);
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
 // get all images
 app.get("/api/images", async (req, res) => {
   const bucketName = "framefinder-photography-abey"; // Your bucket name
@@ -133,14 +103,29 @@ app.get("/api/images", async (req, res) => {
       key: item.Key,
       likes: 0, // Default likes count
       liked: false, 
+      comments: []
     }));
-
-
-
     // Fetch like counts for all images
     const likeCountsResult = await pool.query(
       "SELECT post_url, COUNT(*) as like_count FROM likes GROUP BY post_url"
     );
+
+        // Fetch comments for all images
+    const commentsResult = await pool.query(
+        "SELECT id, image_key, user_email, comment FROM comments ORDER BY created_at DESC"
+      );
+
+      let commentsMap = {};
+    commentsResult.rows.forEach((row) => {
+        if (!commentsMap[row.image_key]) {
+            commentsMap[row.image_key] = [];
+        }
+        commentsMap[row.image_key].push({
+            id: row.id,
+            user: row.user_email, // ✅ Store user email
+            comment: row.comment, // ✅ Store comment text
+        });
+    });
 
     // Convert database result to a map
     let likeCounts = {};
@@ -155,9 +140,7 @@ app.get("/api/images", async (req, res) => {
       const likesResult = await pool.query(
         "SELECT post_url FROM likes WHERE user_id = $1",
         [user_id]
-      );
-    
-    
+      );    
       likedImages = new Set(likesResult.rows.map((row) => row.post_url));
     
     }
@@ -166,10 +149,11 @@ app.get("/api/images", async (req, res) => {
       ...img,
       likes: likeCounts[img.key] || 0, // Assign like count or default to 0
       liked: likedImages.has(img.key), // Check if the user liked this image
+      comments: commentsMap[img.key] || [],
     }));
 
     
-    res.json({ success: true, message: "Fetched images with like counts", data: images });
+    res.json({ success: true, message: "Fetched images with like counts & comments", data: images });
   } catch (error) {
     res.status(500).json({ error: "Database error" });
   }
@@ -238,6 +222,52 @@ app.delete("/api/unlike", async (req, res) => {
 });
 
 
+//add a comment
+app.post("/api/comment", async (req, res) => {
+  const { image_key, user_email, comment } = req.body;
+  if (!image_key || !user_email || !comment) {
+    return res.status(400).json({ error: "Missing required fields: user_id or image_key" });
+  }
+  try {
+    const result = await client.query(
+      `INSERT INTO comments (image_key, user_email, comment, created_at)
+       VALUES ($1, $2, $3, NOW())
+       RETURNING *;`,
+       [image_key, user_email, comment]
+    );
+
+    if (result.rowCount > 0) {
+      res.json({ success: true, message: "commented successfully", like: result.rows[0] });
+    } else {
+      res.status(400).json({ success: false, message: "User has already liked this image" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+//delete a comment
+app.delete("/api/comment/:id", async (req, res) => {
+  const commentId = req.params.id;
+
+  try {
+
+    const result = await pool.query("DELETE FROM comments WHERE id = $1 RETURNING *", [commentId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ success: false, message: "Comment not found" });
+    }
+
+    res.json({ success: true, message: "Comment deleted successfully" });
+  } catch (error) {
+    console.error("🚨 Error deleting comment:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+
+//like an image
 app.post("/api/like", async (req, res) => {
   const { user_id, image_key } = req.body; // Access JSON body
 

@@ -73,23 +73,15 @@
   gap: 10%;
 }
 
-
-  /* .photo img {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
-    object-fit: cover;
-  }
-
-  .photo img:hover {
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3); 
-  }
-
-  .photo img {
-    transition: box-shadow 0.3s ease, transform 0.3s ease; 
-  } */
-  
-
+.user-comments.portrait {
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-width: 146px;
+  max-height: 377px;
+  scrollbar-width: none;
+  position: relative;
+  left: -15px;
+}
 .photo-gallery {
     /* display: inline-flex; */
     height: 10%;
@@ -138,7 +130,8 @@
     max-height: 100%;
     max-width: 80%;
     /* margin-left: -15%; */
-  }
+    background: black;
+}
 
 
 
@@ -236,7 +229,7 @@
     align-items: flex-start;
     background: #fff; /* Green background for contrast */
     color: #fff;
-    overflow-y: auto; /* Enable scrolling if content overflows */
+    overflow-y: auto;
     border-radius: 0 8px 8px 0; /* Match modal's border radius */
   }
   
@@ -250,26 +243,25 @@
     margin-bottom: 10px;
   }
   
-  /* .interaction-section .comments ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .interaction-section .comments ul li {
-    margin-bottom: 10px;
-    padding: 10px;
-    background: #fff;
-    color: #000;
-    border-radius: 5px;
-  } */
 
-  .delete-option {
-    bottom: -80%;
+  .options.portrait {
     position: relative;
-    left: -6%;
-    cursor: pointer;
-    color: black;
+    left: 7%;
+    top: -2%;
+}
+
+.options.landscape {
+  position: relative;
+  left: 5%;
+  top: -11%;
+}
+
+.delete-option {
+  bottom: -80%;
+  position: relative;
+  left: -34%;
+  cursor: pointer;
+  color: black;
 }
 
 .delete-option :hover{
@@ -277,11 +269,20 @@
   
 }
 
+.comment-delete-btn {
+  font-size: 8px;
+  cursor: pointer;
+}
+
 .comment-text {
+  position: relative;
   color: #000;
   padding: 6%;
   padding-left: 0%;
-  font-size: 93%;
+  font-size: 80%;
+  border-bottom: 1px solid black;
+  /* left: -15px; */
+  opacity: 0.6;
 }
 
 .landscape-comment-text {
@@ -291,6 +292,11 @@
   font-size: 90%;
   position: relative;
   left: -7%;
+  margin-bottom: 0px;
+  opacity: .7;
+  border-bottom: 1px solid black;
+  /* overflow-x: inherit; */
+  width: 170px;
 }
 
   .interaction-section.portrait {
@@ -305,10 +311,262 @@
   color: red;
 }
 
+.comments-title {
+  color: black;
+  opacity: .8;
+  position: relative;
+  top: 6px;
+  left: -21px;
+  border: 1px solid black;
+  border-left: 0px;
+  border-right: 0px;
+  width: 119%;
+}
+
+.no-comments{
+  color: black;
+}
+.comment-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 15px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  z-index: 1000;
+  width: 300px;
+}
+
+.comment-input {
+  width: 100%;
+  height: 80px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: none;
+}
+
+.comment-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.comment-buttons button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.comment-buttons button:first-child {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.comment-buttons button:last-child {
+  background-color: #ccc;
+  color: black;
+}
+
+
 
 @media (max-width: 768px) {
   .photo {
     width: calc(45% - 10px);
+  }
+  
+  .like-delete.portrait {
+    top: 38%;
+  }
+
+  .likes {
+    white-space: nowrap; /* ✅ Prevents line breaks */
+    display: inline-block;
+  }
+
+
+  .like-delete.landscape {
+    display: inline-flex;
+    left: -92%;
+    gap: 4%;
+    top: 44%;
+    font-size: smaller;
+}
+
+  .display-modal{
+    all: unset;
+  }
+
+  .display-modal.portrait {
+    all: unset;
+    display: flex;
+    width: 81.3%;
+    padding: 2%;
+}
+
+.display-modal.landscape {
+  all: unset;
+  position: relative;
+  max-width: 86%;
+  left: -6%;
+  display: flex
+;
+}
+
+  .interaction-section.portrait {
+    all: unset;
+    display: block;
+    position: relative;
+    border: 1px solid black;
+    background-color: white;
+    /* position: relative; */
+    /* margin-top: -112%; */
+    /* left: 0%; */
+    width: 56%;
+    height: auto;
+    border-top-right-radius: 14px;
+    border-bottom-right-radius: 14px;
+}
+
+.interaction-section.landscape {
+  all: unset;
+  /* border: 1px solid black; */
+  background: white;
+  display: flex;
+  max-width: 39%;
+  /* height: 38%; */
+  position: relative;
+  left: 0%;
+  border-top-right-radius: 13px;
+  border-bottom-right-radius: 13px;
+  /* margin-top: 35%; */
+}
+
+  .picture-caption{
+    all: unset;
+
+  }
+  
+  .comments{
+    all: unset;
+    display: grid;
+    align-items: stretch;
+  }
+
+  .comments-title{
+    all: unset;
+
+  }
+
+
+  .comment-text {
+      all: unset;
+      margin-bottom: 16%;
+  }
+
+  .landscape-comment-text{
+    all: unset;
+
+  }
+
+  .options.portrait {
+    all: unset;
+    position: relative;
+    left: 10%;
+    bottom: 0%;
+}
+
+.options.landscape {
+  all: unset;
+  position: relative;
+  left: 10%;
+  bottom: -45%;
+}
+
+/* .user-comments {
+  position: relative;
+  top: -16%;
+  left: -4%;
+} */
+
+.user-comments.portrait {
+  position: relative;
+  display: grid;
+  top: 13%;
+  left: 4%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-width: 150px; /* ✅ Increase to prevent cutoff */
+  max-height: 175px;
+  scrollbar-width: none; /* ✅ Hides scrollbar initially (for Firefox) */
+}
+
+.user-comments.landscape {
+  all: unset;
+  position: relative;
+  display: grid;
+  top: -15%;
+  left: 14%;
+  max-height: 143px;
+  overflow-x: hidden;
+  max-width: 150px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  /* border: 1px solid black; */
+  width: 116px;
+}
+
+.user-comments.portrait::-webkit-scrollbar,
+.user-comments.landscape::-webkit-scrollbar {
+  width: 0px; /* ✅ Hides scrollbar initially */
+}
+
+/* ✅ Show scrollbar only when hovering */
+.user-comments.portrait:hover::-webkit-scrollbar,
+.user-comments.landscape:hover::-webkit-scrollbar {
+  width: 8px; /* ✅ Shows scrollbar on hover */
+}
+
+/* ✅ Style Scrollbar on Hover */
+.user-comments.portrait:hover::-webkit-scrollbar-thumb,
+.user-comments.landscape:hover::-webkit-scrollbar-thumb {
+  background-color: #4a90e2; /* ✅ Changes color when hovered */
+  border-radius: 4px;
+}
+
+.user-comments.portrait:hover::-webkit-scrollbar-track,
+.user-comments.landscape:hover::-webkit-scrollbar-track {
+  background-color: #e0e0e0; /* ✅ Light track color */
+}
+
+
+
+
+}
+
+@media (max-width: 480px) {
+  .comment-modal {
+      width: 95%; /* ✅ Takes most of the screen width */
+      max-width: none; /* ✅ Removes max-width restriction */
+      padding: 20px;
+  }
+
+  .comment-input {
+      height: 100px; /* ✅ Bigger text area on mobile */
+      font-size: 16px; /* ✅ Larger text for better mobile UX */
+  }
+
+  .comment-buttons {
+      flex-direction: column; /* ✅ Stack buttons on small screens */
+  }
+
+  .comment-buttons button {
+      width: 100%; /* ✅ Full width buttons */
+      margin-bottom: 10px; /* ✅ Adds space between buttons */
+      font-size: 16px; /* ✅ Bigger tap targets */
   }
 }
 
