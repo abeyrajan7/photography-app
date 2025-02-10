@@ -230,7 +230,6 @@
     align-items: flex-start;
     background: #fff; /* Green background for contrast */
     color: #fff;
-    overflow-y: auto;
     border-radius: 0 8px 8px 0; /* Match modal's border radius */
   }
   
@@ -258,11 +257,11 @@
 }
 
 .delete-option {
-  top: 75vh;
-  position: absolute;
-  left: -1vw;
-  cursor: pointer;
-  color: black;
+    top: 41vh;
+    position: absolute;
+    left: -1vw;
+    cursor: pointer;
+    color: black;
 }
 
 .delete-option :hover{
@@ -372,13 +371,9 @@
   color: black;
 }
 
-/* @media (min-width: 320px) and (max-width: 425px) {
-  .like-delete.portrait {
-    left: auto;
-    bottom: -26px;
-    font-size: 12px;
+.like-delete.landscape {
+  top: 20vh;
 }
-} */
 
 @media (max-width: 768px) {
 
