@@ -128,8 +128,9 @@
 
   .display-modal.landscape {
     max-height: 100%;
-    max-width: 80%;
+    max-width: 40%;
     /* margin-left: -15%; */
+    width: auto;
     background: black;
 }
 
@@ -257,9 +258,9 @@
 }
 
 .delete-option {
-  bottom: -80%;
-  position: relative;
-  left: 0px;
+  top: 75vh;
+  position: absolute;
+  left: -1vw;
   cursor: pointer;
   color: black;
 }
@@ -269,7 +270,8 @@
 }
 
 .comment-delete-btn {
-  font-size: 8px;
+  font-size: 10px;
+  color: red;
   cursor: pointer;
 }
 
@@ -303,7 +305,7 @@
   }
   
   .interaction-section.landscape {
-    width: 27%;
+    width: auto;
 }
 
 .liked-icon{
@@ -311,15 +313,15 @@
 }
 
 .comments-title {
-  color: black;
+  color: #000;
   opacity: .8;
   position: relative;
   top: 6px;
   left: -21px;
-  border: 1px solid black;
-  border-left: 0px;
-  border-right: 0px;
-  width: 119%;
+  border: 1px solid #000;
+  border-left: 0;
+  border-right: 0;
+  width: 13vw;
 }
 
 .no-comments{
@@ -379,6 +381,11 @@
 } */
 
 @media (max-width: 768px) {
+
+  .no-comments {
+    color: black;
+    font-size: 9px;
+}
   
   .photo {
     width: calc(45% - 10px);

@@ -440,7 +440,8 @@ export default function Gallery() {
                   {img.likes}
                 </span>
                 <span>
-                  <FontAwesomeIcon icon={faComment} /> 12
+                  <FontAwesomeIcon icon={faComment} />{" "}
+                  {img.comments ? img.comments.length : 0}
                 </span>
               </figcaption>
             </figure>
