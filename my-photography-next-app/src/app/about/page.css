@@ -1,12 +1,12 @@
 .about-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 20px;
-    padding: 40px;
-    position: relative;
-    left: 13vw;
-
+  display: grid
+;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 20px;
+  padding: 40px;
+  margin: auto;
+  margin-right: -36%;
 }
   
   .about-box {
