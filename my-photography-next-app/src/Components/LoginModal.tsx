@@ -1,5 +1,5 @@
 import { signIn } from "next-auth/react";
-import "./pLoginModal.css";
+import "./LoginModal.css";
 
 interface LoginModalProps {
   isOpen: boolean;
