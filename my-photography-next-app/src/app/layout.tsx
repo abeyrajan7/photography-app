@@ -47,17 +47,30 @@ export default function RootLayout({
             {showWarning ? (
               <div className="warning-overlay">
                 <p>
-                  ⚠️ Google Sign-In does not work in Instagram/LinkedIn in-app
-                  browser. Please open this page in **Chrome, Safari, or Edge**.
+                  ⚠️ Google Sign-In does not work in Instagram/LinkedIn WebView.
+                </p>
+                <p>
+                  Please open this page in <b>Chrome, Safari, or Edge.</b>
                 </p>
                 <button
                   onClick={() => {
-                    window.location.href =
-                      "https://photography-app-5osi.vercel.app";
+                    window.open(
+                      "https://photography-app-5osi.vercel.app",
+                      "_blank"
+                    );
                   }}
                 >
                   Open in Browser
                 </button>
+                <p>or manually copy this link:</p>
+                <input
+                  type="text"
+                  value="https://photography-app-5osi.vercel.app"
+                  readOnly
+                  onClick={(e) => (e.target as HTMLInputElement).select()} 
+                  style={{ width: "100%", padding: "5px" }}
+                />
+                ✅ Why T
               </div>
             ) : (
               children
