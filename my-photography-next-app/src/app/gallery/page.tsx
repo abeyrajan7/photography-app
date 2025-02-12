@@ -468,7 +468,7 @@ export default function Gallery() {
               {/* <h2 className="picture-caption">
                 {selectedPicture?.title || " "}
               </h2> */}
-              <div className="comments comments-options">
+              <div className="comments">
                 <p className="comments-title">Comments</p>
                 <ul
                   className={`user-comments ${
@@ -480,9 +480,9 @@ export default function Gallery() {
                     selectedPicture.comments.map((comment, index) => (
                       <li
                         key={index}
-                        className={
-                          isPortrait ? "comment-text" : "landscape-comment-text"
-                        }
+                        // className={
+                        //   isPortrait ? "comment-text" : "landscape-comment-text"
+                        // }
                       >
                         <strong>{comment.user.split("@")[0]}:</strong>{" "}
                         {comment.comment}
@@ -497,13 +497,13 @@ export default function Gallery() {
                                 )
                               }
                             >
-                              delete-comment
+                              delete
                             </p>
                           )}
                       </li>
                     ))
                   ) : (
-                    <li className="no-comments">No comments yet.</li>
+                    <li className="no-comments">No comments yet!</li>
                   )}
                 </ul>
               </div>
@@ -511,7 +511,7 @@ export default function Gallery() {
                 className={`options ${isPortrait ? "portrait" : "landscape"}`}
               >
                 <ul
-                  className={`delete-option like-delete ${
+                  className={`like-delete ${
                     isPortrait ? "portrait" : "landscape"
                   }`}
                 >

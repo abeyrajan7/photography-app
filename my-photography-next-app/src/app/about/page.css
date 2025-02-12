@@ -4,8 +4,8 @@
     grid-template-rows: repeat(2, 1fr);
     gap: 20px;
     padding: 40px;
-    margin: auto;
-    margin-right: -27%;
+    position: relative;
+    left: 13vw;
 
 }
   

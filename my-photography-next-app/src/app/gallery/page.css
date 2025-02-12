@@ -75,13 +75,26 @@
 
 .user-comments.portrait {
   overflow-x: hidden;
+  /* font-size: 19px; */
+  padding: 4px;
   overflow-y: auto;
-  max-width: 146px;
+  /* max-width: 210px; */
   max-height: 377px;
   scrollbar-width: none;
   position: relative;
-  left: -15px;
+  /* left: -15px; */
+  color: black;
+  max-width: 100%;
+  width: auto;
+  max-height: 43vh;
+  background: #e9e9e9;
+  display: inline-block;
+  white-space: normal;
+  position: absolute;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
+
 .photo-gallery {
     /* display: inline-flex; */
     height: 10%;
@@ -92,11 +105,13 @@
     /* gap: 10px;  */
     justify-content: center; /* Center the gallery */
 }
+
 .display-modal img {
   max-width: 75%;
-  max-height: 100%; /* Maintain aspect ratio */
-  object-fit: contain; /* Ensure the image scales properly */
-  border-right: 1px solid #ddd; /* Optional: Separator between image and comments */
+  max-height: 100%;
+  object-fit: contain;
+  background-color: black;
+  border-right: 1px solid #ddd;
 }
 
 .display-modal {
@@ -118,17 +133,17 @@
 
 
 
-  .display-modal.portrait {
-    margin-top: 1%;
-    max-width: 38%;
-    max-height: 100%; /* Adjust height for portrait */
-    /* margin-left: -15%;
-    margin-left: 0%; */
-  }
+.display-modal.portrait {
+  margin-top: 1.3%;
+  max-width: 33vw;
+  max-height: 100%;
+}
+  
+
 
   .display-modal.landscape {
-    max-height: 100%;
-    max-width: 40%;
+    /* max-height: 100%; */
+    /* max-width: 66%; */
     /* margin-left: -15%; */
     width: auto;
     background: black;
@@ -223,7 +238,7 @@
   .interaction-section {
     flex-shrink: 0; /* Prevent shrinking */
     width: 30%; /* Set a suitable width for the comments section */
-    padding: 20px;
+    /* padding: 20px; */
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* Align content to the top */
@@ -240,33 +255,37 @@
   
   .interaction-section .comments p {
     font-weight: bold;
-    margin-bottom: 10px;
-  }
+    margin-bottom: 7px;
+    opacity: 0.6;
+}
   
 
-  .options.portrait {
-    position: relative;
-    left: 7%;
-    top: -2%;
+.options.portrait {
+  position: relative;
+  top: 51vh;
+  color: black;
+  font-size: 15px;
+  left: 1vw;
 }
 
 .options.landscape {
   position: relative;
-  left: 5%;
-  top: -11%;
+  /* left: 0%; */
+  top: 1%;
+  /* font-size: 38px; */
 }
 
-.delete-option {
+/* .delete-option {
     top: 41vh;
     position: absolute;
     left: -1vw;
     cursor: pointer;
     color: black;
-}
+} */
 
-.delete-option :hover{
+/* .delete-option :hover{
   color: rgb(154, 54, 54);
-}
+} */
 
 .comment-delete-btn {
   font-size: 10px;
@@ -299,12 +318,11 @@
   width: 170px;
 }
 
-  .interaction-section.portrait {
-    width: 30%; /* Adjust width for portrait mode */
-  }
+
   
   .interaction-section.landscape {
     width: auto;
+    height: auto;
 }
 
 .liked-icon{
@@ -316,11 +334,11 @@
   opacity: .8;
   position: relative;
   top: 6px;
-  left: -21px;
-  border: 1px solid #000;
-  border-left: 0;
-  border-right: 0;
-  width: 13vw;
+  /* left: -21px; */
+  border-bottom: 1px solid #000;
+  /* border-left: 0; */
+  /* border-right: 0; */
+  width: 15vw;
 }
 
 .no-comments{
@@ -372,222 +390,182 @@
 }
 
 .like-delete.landscape {
-  top: 20vh;
-}
-
-@media (max-width: 768px) {
-
-  .no-comments {
-    color: black;
-    font-size: 9px;
-}
-  
-  .photo {
-    width: calc(45% - 10px);
-  }
-  
-  .like-delete.portrait {
-    font-size: 12px;
-    top: 15%;
-}
-  .likes {
-    white-space: nowrap; /* ✅ Prevents line breaks */
-    display: inline-block;
-  }
-
-
-  .like-delete.landscape {
-    display: inline-flex;
-    left: -100%;
-    gap: 4%;
-    top: 41%;
-    font-size: 12px;
-}
-
-  .display-modal{
-    all: unset;
-  }
-
-  .display-modal.portrait {
-    all: unset;
-    display: flex;
-    width: 81.3%;
-    padding: 2%;
-}
-
-.display-modal.landscape {
-  all: unset;
-  position: relative;
-  max-width: 86%;
-  left: -6%;
-  display: flex
-;
-}
-
-  .interaction-section.portrait {
-    all: unset;
-    display: block;
-    position: relative;
-    border: 1px solid black;
-    background-color: white;
-    /* position: relative; */
-    /* margin-top: -112%; */
-    /* left: 0%; */
-    width: 56%;
-    height: auto;
-    border-top-right-radius: 14px;
-    border-bottom-right-radius: 14px;
-}
-
-.interaction-section.landscape {
-  all: unset;
-  /* border: 1px solid black; */
-  background: white;
-  display: flex;
-  max-width: 39%;
-  /* height: 38%; */
-  position: relative;
-  left: 0%;
-  border-top-right-radius: 13px;
-  border-bottom-right-radius: 13px;
-  /* margin-top: 35%; */
-}
-
-  .picture-caption{
-    all: unset;
-
-  }
-  
-  .comments{
-    all: unset;
-    display: grid;
-    align-items: stretch;
-  }
-
-  .comments-title{
-    all: unset;
-
-  }
-
-
-  .comment-text {
-    all: unset;
-    margin-bottom: 16%;
-    padding: 1px;
-    font-size: 10px;
-    position: relative;
-    left: -1px;
-    border-bottom: 1px solid black;
-}
-
-  .landscape-comment-text{
-    all: unset;
-
-  }
-
-  .options.portrait {
-    all: unset;
-    position: relative;
-    left: 10%;
-    bottom: 0%;
-}
-
-.options.landscape {
-  all: unset;
-  position: relative;
-  left: 10%;
-  bottom: -45%;
-}
-
-/* .user-comments {
-  position: relative;
-  top: -16%;
-  left: -4%;
-} */
-
-.user-comments.portrait {
-  position: relative;
-  display: grid;
-  top: 13%;
-  left: 4%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  max-width: 150px; /* ✅ Increase to prevent cutoff */
-  max-height: 175px;
-  scrollbar-width: none; /* ✅ Hides scrollbar initially (for Firefox) */
+  color: #000;
+  position: static;
+  margin-top: 6vh;
+  margin-left: 1vw;
+  font-size: 15px;
 }
 
 .user-comments.landscape {
-  all: unset;
+  color: #000;
   position: relative;
-  display: grid;
-  top: -15%;
-  left: 14%;
-  max-height: 143px;
+  /* left: 0vw; */
+  width: auto;
+  max-height: 30vh;
+  /* max-width: 32px; */
   overflow-x: hidden;
-  max-width: 150px;
   overflow-y: auto;
   scrollbar-width: none;
-  /* border: 1px solid black; */
-  width: 116px;
-}
-
-.user-comments.portrait::-webkit-scrollbar,
-.user-comments.landscape::-webkit-scrollbar {
-  width: 0px; /* ✅ Hides scrollbar initially */
-}
-
-/* ✅ Show scrollbar only when hovering */
-.user-comments.portrait:hover::-webkit-scrollbar,
-.user-comments.landscape:hover::-webkit-scrollbar {
-  width: 8px; /* ✅ Shows scrollbar on hover */
-}
-
-/* ✅ Style Scrollbar on Hover */
-.user-comments.portrait:hover::-webkit-scrollbar-thumb,
-.user-comments.landscape:hover::-webkit-scrollbar-thumb {
-  background-color: #4a90e2; /* ✅ Changes color when hovered */
-  border-radius: 4px;
-}
-
-.user-comments.portrait:hover::-webkit-scrollbar-track,
-.user-comments.landscape:hover::-webkit-scrollbar-track {
-  background-color: #e0e0e0; /* ✅ Light track color */
+  background: #e9e9e9;
 }
 
 
+/* Media Queries */
 
+/* 📱 5-6 inches (Small Phones) */
+@media screen and (max-width: 360px) {
+  modal.portrait {
+    margin-top: 1%;
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+}
 
 }
 
-@media (max-width: 480px) {
-  .comment-modal {
-      width: 95%; /* ✅ Takes most of the screen width */
-      max-width: none; /* ✅ Removes max-width restriction */
-      padding: 20px;
+/* 📱 6-7 inches (Large Phones & Phablets) */
+@media screen and (min-width: 361px) and (max-width: 480px) {
+  .display-modal.portrait {
+    margin-top: 2%;
+    max-width: 100%;
+    max-height: 100%;
+    width: 98%;
+}
+
+.display-modal.landscape {
+  width: 100vw;
+  height: 30vh;
+}
+
+.no-comments {
+  color: black;
+  font-size: 13px;
+}
+
+.user-comments.portrait {
+  width: 24vw;
+}
+
+.interaction-section .comments p {
+  width: 25vw;
+}
+
+.user-comments.landscape {
+  position: absolute;
+  max-height: 15vh;
+  padding: .8px;
+}
+
+.options.landscape {
+  position: relative;
+  bottom: -124px;
+}
+
+.like-delete.landscape {
+  color: #000;
+  position: static;
+  margin-top: 19vh;
+  font-size: 13px;
+}
+}
+
+/* 📲 7-12 inches (Tablets & Small Laptops) */
+@media screen and (min-width: 481px) and (max-width: 1024px) {
+
+  .user-comments.portrait {
+    max-width: 25%;
+}
+
+  .interaction-section .comments p {
+    width: 30vw;
   }
 
-  .comment-input {
-      height: 100px; /* ✅ Bigger text area on mobile */
-      font-size: 16px; /* ✅ Larger text for better mobile UX */
-  }
 
-  .comment-buttons {
-      flex-direction: column; /* ✅ Stack buttons on small screens */
-  }
+  .display-modal.portrait {
+    margin-top: 2%;
+    max-width: 100%;
+    max-height: 100%;
+    width: 50%;
+}
 
-  .comment-buttons button {
-      width: 100%; /* ✅ Full width buttons */
-      margin-bottom: 10px; /* ✅ Adds space between buttons */
-      font-size: 16px; /* ✅ Bigger tap targets */
-  }
+.user-comments.landscape {
+  width: auto;
+}
+
+
+
+}
+
+/* tablet */
+@media screen and (min-width: 1200px) and (max-width: 1600px) and (orientation: landscape) {
+  .like-delete.landscape {
+    color: #000;
+    position: static;
+    margin-top: auto;
+    margin-left: 0vw;
+    padding: 1vw;
+    font-size: 28px;
+}
+
+.comment-input {
+  height: 78px;
+}
+
+.comment-modal{
+  width: 22vw;
+}
+
+.options.landscape, .options.portrait {
+  font-size: 26px;
+  margin-top: 2vh;
+  margin-left: 1vw;
+}
+
+.display-modal.portrait {
+  max-width: 50vw;
+}
+.user-comments.landscape,
+.user-comments.portrait {
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-width: 98%;
+  height: auto;
+  max-height: 377px;
+  scrollbar-width: none;
+  position: relative;
+  padding: 16px;
+  left: 0px;
+  color: black;
+  width: auto;
+  max-height: 39vh;
+  background: #e9e9e9;
+  font-size: 32px;
+}
+
+.user-comments.landscape {
+  max-width: 50%;
+}
+
+
+.comment-delete-btn {
+    font-size: 21px;
+    opacity: .7;
+}
+
+.comments-title {
+  font-size: 34px;
+}
+
+.interaction-section {
+  padding: 0px;
+}
+
+.display-modal.landscape {
+  width: 68vw;
+}
 }
 
 
 
 
-
-
-
-
-  
