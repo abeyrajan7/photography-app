@@ -1,4 +1,5 @@
 import { signIn } from "next-auth/react";
+import "./pLoginModal.css";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -10,7 +11,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-6 rounded-md shadow-md w-96">
+      <div className="bg-white p-6 rounded-md shadow-md w-96 login">
         <h2 className="text-lg font-bold mb-4">Login Required</h2>
         <p className="mb-4">
           You need to log in with Google to like this image.
