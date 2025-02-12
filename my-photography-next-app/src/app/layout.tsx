@@ -67,10 +67,9 @@ export default function RootLayout({
                   type="text"
                   value="https://photography-app-5osi.vercel.app"
                   readOnly
-                  onClick={(e) => (e.target as HTMLInputElement).select()} 
-                  style={{ width: "100%", padding: "5px" }}
+                  onClick={(e) => (e.target as HTMLInputElement).select()}
+                  style={{ width: "100%", padding: "5px", color: "black" }}
                 />
-                ✅ Why T
               </div>
             ) : (
               children
