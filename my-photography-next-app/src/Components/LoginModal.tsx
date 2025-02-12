@@ -11,19 +11,25 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [showWarning, setShowWarning] = useState(false);
 
   useEffect(() => {
-    let userAgent = navigator.userAgent || ""; // Fallback for all browsers
+    let userAgent: string = navigator.userAgent || ""; 
 
-    // Check if userAgentData exists (only supported in some browsers)
-    if ((navigator as any).userAgentData) {
-      (navigator as any).userAgentData
+    // Check if userAgentData exists (only in modern Chrome/Edge)
+    const uaData = (
+      navigator as Navigator & {
+        userAgentData?: { getHighEntropyValues?: Function };
+      }
+    ).userAgentData;
+
+    if (uaData && uaData.getHighEntropyValues) {
+      uaData
         .getHighEntropyValues(["platform"])
-        .then((data: any) => {
+        .then((data: { platform?: string }) => {
           userAgent += data.platform || "";
         })
-        .catch(() => {}); // Catch errors silently
+        .catch(() => {});
     }
 
-    // Check for in-app browsers (Instagram, Facebook, LinkedIn)
+    // Detect in-app browsers (Instagram, Facebook, LinkedIn)
     if (
       userAgent.includes("Instagram") ||
       userAgent.includes("FBAN") || // Facebook App
