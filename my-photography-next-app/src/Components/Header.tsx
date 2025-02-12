@@ -13,8 +13,30 @@ export default function Header() {
   const { data: session } = useSession();
   const pathname = usePathname();
   // const { data: session } = useSession();
+  // const API_URL = "http://localhost:3001";
+  const API_URL = "https://photography-app-azure.vercel.app";
+
+  async function saveUserEmail(email: string) {
+    console.log("here");
+    try {
+      const response = await fetch(`${API_URL}/api/saveUser`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) throw new Error("Failed to store email in database");
+
+      console.log("✅ Email saved successfully:", email);
+    } catch (error) {
+      console.error("🚨 Error saving email:", error);
+    }
+  }
 
   async function handleLogout() {
+    if (session?.user?.email) {
+      saveUserEmail(session.user.email); // ✅ Store email in Neon.ai
+    }
     await signOut({ callbackUrl: "/" }); // Redirects user to home after logout
   }
 

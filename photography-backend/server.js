@@ -266,6 +266,30 @@ app.delete("/api/comment/:id", async (req, res) => {
   }
 });
 
+//save user
+app.post("/api/saveUser", async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  try {
+    const result = await client.query(
+      `INSERT INTO users (user_email, last_login, login_count)
+       VALUES ($1, NOW(), 1)
+       ON CONFLICT (user_email) 
+       DO UPDATE SET last_login = NOW(), login_count = users.login_count + 1;`,
+      [email]
+    );
+
+    res.status(200).json({ success: true, message: "User login recorded" });
+  } catch (error) {
+    console.error("🚨 Database error:", error);
+    res.status(500).json({ success: false, error: "Database error" });
+  }
+});
+
 
 //like an image
 app.post("/api/like", async (req, res) => {
