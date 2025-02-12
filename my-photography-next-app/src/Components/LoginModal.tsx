@@ -11,22 +11,28 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [showWarning, setShowWarning] = useState(false);
 
   useEffect(() => {
-    let userAgent: string = navigator.userAgent || ""; 
+    let userAgent: string = navigator.userAgent || ""; // Default fallback for all browsers
 
-    // Check if userAgentData exists (only in modern Chrome/Edge)
+    // Properly type `userAgentData`
     const uaData = (
       navigator as Navigator & {
-        userAgentData?: { getHighEntropyValues?: Function };
+        userAgentData?: {
+          getHighEntropyValues?: (
+            keys: string[]
+          ) => Promise<{ platform?: string }>;
+        };
       }
     ).userAgentData;
 
-    if (uaData && uaData.getHighEntropyValues) {
+    if (uaData?.getHighEntropyValues) {
       uaData
         .getHighEntropyValues(["platform"])
-        .then((data: { platform?: string }) => {
-          userAgent += data.platform || "";
+        .then((data) => {
+          if (data.platform) {
+            userAgent += data.platform;
+          }
         })
-        .catch(() => {});
+        .catch(() => {}); // Catch errors silently
     }
 
     // Detect in-app browsers (Instagram, Facebook, LinkedIn)
