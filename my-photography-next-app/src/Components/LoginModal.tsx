@@ -8,21 +8,33 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
-  if (!isOpen) return null;
   const [showWarning, setShowWarning] = useState(false);
 
   useEffect(() => {
-    const userAgent = navigator.userAgent || navigator.vendor;
+    let userAgent = navigator.userAgent || ""; // Fallback for all browsers
 
+    // Check if userAgentData exists (only supported in some browsers)
+    if ((navigator as any).userAgentData) {
+      (navigator as any).userAgentData
+        .getHighEntropyValues(["platform"])
+        .then((data: any) => {
+          userAgent += data.platform || "";
+        })
+        .catch(() => {}); // Catch errors silently
+    }
+
+    // Check for in-app browsers (Instagram, Facebook, LinkedIn)
     if (
-      userAgent.includes("Instagram") || // Instagram WebView
-      userAgent.includes("FBAN") || // Facebook WebView
-      userAgent.includes("FBAV") || // Facebook WebView
-      userAgent.includes("LinkedInApp") // LinkedIn WebView
+      userAgent.includes("Instagram") ||
+      userAgent.includes("FBAN") || // Facebook App
+      userAgent.includes("FBAV") || // Facebook App
+      userAgent.includes("LinkedInApp") // LinkedIn App
     ) {
       setShowWarning(true);
     }
   }, []);
+
+  if (!isOpen) return null;
 
   return (
     <>
