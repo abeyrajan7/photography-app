@@ -426,6 +426,14 @@
 
 /* 📱 6-7 inches (Large Phones & Phablets) */
 @media screen and (min-width: 361px) and (max-width: 480px) {
+
+  .options.portrait {
+    position: static;
+    margin-top: 33vh;
+  }
+  .user-comments.portrait {
+    max-height: 31vh;
+  }
   .display-modal.portrait {
     margin-top: 2%;
     max-width: 100%;
@@ -473,9 +481,16 @@
 /* 📲 7-12 inches (Tablets & Small Laptops) */
 @media screen and (min-width: 481px) and (max-width: 1024px) {
 
-  .user-comments.portrait {
-    max-width: 25%;
-}
+
+    .user-comments.portrait {
+        max-width: 25%;
+        max-height: 27vh;
+    }
+
+    .options.portrait {
+      position: static;
+      margin-top: 28vh;
+    }
 
   .interaction-section .comments p {
     width: 30vw;
@@ -567,5 +582,14 @@
 }
 
 
+@media screen and (min-width: 1025px) and (max-width: 1113px){
+  .user-comments.portrait {
+    max-height: 30vh;
+  }
 
+  .options.portrait {
+    position: static;
+    margin-top: 31vh;
+  }
+}
 
