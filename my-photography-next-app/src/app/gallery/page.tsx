@@ -13,8 +13,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import UploadMenu from "../../Components/UploadMenu";
 import LoginModal from "../../Components/LoginModal";
-import { useSession, signIn, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useSession, signIn } from "next-auth/react";
 
 export default function Gallery() {
   type CommentData = {
@@ -34,13 +33,11 @@ export default function Gallery() {
 
   const [displayModalOpen, setDisplayModalOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
-  const [isPortrait, setIsPortrait] = useState(false);
   const [loadedImages, setLoadedImages] = useState<ImageData[]>([]);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [newComment, setNewComment] = useState("");
   const API_URL = "https://photography-app-azure.vercel.app";
-  const router = useRouter();
 
   const { data: session } = useSession();
   const loggedInUser = session?.user?.email || "";
@@ -72,7 +69,6 @@ export default function Gallery() {
     const image = new Image();
     image.src = loadedImages[index].url;
     image.onload = () => {
-      setIsPortrait(image.height > image.width);
       setSelectedIndex(index);
       setDisplayModalOpen(true);
     };
