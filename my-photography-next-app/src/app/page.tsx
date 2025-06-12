@@ -1,14 +1,6 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+// app/page.tsx (no "use client" here)
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace("/about"); // Redirect to /about
-  }, [router]);
-
-  return null;
+  redirect("/gallery");
 }

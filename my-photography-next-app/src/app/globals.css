@@ -13,22 +13,18 @@
     --foreground: #ededed;
   }
 }
-
 body {
   color: var(--foreground);
-  background: black;
+  background-color: var(--background);
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
-  overflow-x: hidden; /* Disable horizontal scrolling */
 }
 
-.main-body {
-  position: absolute;
-  top: 7%;
-  z-index: -1;
+html,
+body {
+  height: 100%;
 }
-
 
 .warning-overlay {
   position: fixed;
@@ -65,4 +61,8 @@ body {
 
 .warning-overlay button:hover {
   background-color: #e64a19;
+}
+
+.break-inside-avoid {
+  break-inside: avoid;
 }

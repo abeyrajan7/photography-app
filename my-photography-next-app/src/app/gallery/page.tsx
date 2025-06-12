@@ -1,17 +1,26 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faComment, faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faHeart,
+  faComment,
+  faPlus,
+  faTimes,
+  faArrowLeft,
+  faArrowRight,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import UploadMenu from "../../Components/UploadMenu";
 import LoginModal from "../../Components/LoginModal";
-import { useSession } from "next-auth/react";
-import "./page.css";
+import { useSession, signIn, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Gallery() {
   type CommentData = {
     user: string;
-    comment: string; // ✅ Changed from "comments" to "comment" to match JSON
-    id?: number;
+    comment: string;
+    id: number;
   };
 
   type ImageData = {
@@ -20,298 +29,24 @@ export default function Gallery() {
     title?: string;
     likes?: number;
     liked?: boolean;
-    comments: CommentData[]; // ✅ Ensures `comments` is always an array
+    comments: CommentData[];
   };
 
   const [displayModalOpen, setDisplayModalOpen] = useState(false);
-  const [selectedPicture, setSelectedPicture] = useState<ImageData | null>(
-    null
-  );
-  const [isPortrait, setIsPortrait] = useState(false); // State to track orientation
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [isPortrait, setIsPortrait] = useState(false);
   const [loadedImages, setLoadedImages] = useState<ImageData[]>([]);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isCommentBoxOpen, setIsCommentBoxOpen] = useState(false);
   const [newComment, setNewComment] = useState("");
-  // const API_URL = "https://photography-app-azure.vercel.app";
-  //const API_URL = "http://localhost:3001";
-   const API_URL = "https://photography-app-azure.vercel.app";
+  const API_URL = "https://photography-app-azure.vercel.app";
+  const router = useRouter();
 
   const { data: session } = useSession();
   const loggedInUser = session?.user?.email || "";
 
-  const handleSendComment = async (imageKey: string) => {
-    if (!newComment.trim()) return; // ✅ Prevent empty comments
-    if (!session) {
-      console.log("User is not logged in, opening login modal...");
-      setDisplayModalOpen(false);
-      setIsLoginModalOpen(true); // Show login modal if not logged in
-      return;
-    }
-
-    const userEmail = session?.user?.email as string; // ✅ Type assertion
-
-    if (!userEmail) {
-      console.error("Error: User is not logged in.");
-      alert("You need to be logged in to add a comment.");
-      return;
-    }
-    const username = userEmail.split("@")[0];
-    const newCommentObj = { user: username, comment: newComment };
-
-    setSelectedPicture((prev) =>
-      prev ? { ...prev, comments: [...prev.comments, newCommentObj] } : prev
-    );
-
-    setNewComment(""); // ✅ Clear input box
-    setIsCommentBoxOpen(false); // ✅ Close comment box
-
-    try {
-      const response = await fetch(`${API_URL}/api/comment`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          image_key: imageKey,
-          user_email: session?.user?.email,
-          comment: newComment,
-        }),
-      });
-
-      if (!response.ok) throw new Error("Failed to add comment");
-      else {
-        fetchImages();
-      }
-
-      setNewComment(""); // ✅ Clear input
-      setIsCommentBoxOpen(false); // ✅ Close modal after submitting
-    } catch (error) {
-      console.error("Error submitting comment:", error);
-      setSelectedPicture((prev) =>
-        prev ? { ...prev, comments: prev.comments.slice(0, -1) } : prev
-      );
-    }
-  };
-
-  async function handleUnlike(imageKey: string) {
-    if (!session) {
-      setDisplayModalOpen(false);
-      setIsLoginModalOpen(true); // Show login modal if not logged in
-      return;
-    }
-
-    const userEmail = session.user?.email;
-    if (!userEmail) {
-      console.error("Error: Email is not available in the session.");
-      return;
-    }
-
-    // ✅ Step 1: Optimistically Update State (Update UI instantly)
-    setLoadedImages((prevImages) =>
-      prevImages.map((img) =>
-        img.key === imageKey
-          ? {
-              ...img,
-              likes: (img.likes || 0) + (img.liked ? -1 : 1),
-              liked: !img.liked,
-            }
-          : img
-      )
-    );
-
-    // ✅ Step 1.1: Also update the `selectedPicture` in modal
-    if (selectedPicture?.key === imageKey) {
-      setSelectedPicture((prev) =>
-        prev
-          ? {
-              ...prev,
-              likes: (prev.likes || 0) + (prev.liked ? -1 : 1),
-              liked: !prev.liked,
-            }
-          : null
-      );
-    }
-
-    try {
-      // ✅ Step 2: Send API Request to Update Backend
-      const response = await fetch(`${API_URL}/api/unlike`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userEmail, image_key: imageKey }),
-      });
-
-      const data = await response.json();
-      console.log("API Response:", data);
-
-      if (!data.success) {
-        throw new Error("Unlike request failed");
-      }
-    } catch (error) {
-      console.error("Error updating Unlike:", error);
-
-      // ❌ Step 3: Rollback UI if API Fails
-      setLoadedImages((prevImages) =>
-        prevImages.map((img) =>
-          img.key === imageKey
-            ? {
-                ...img,
-                likes: (img.likes || 0) - (img.liked ? -1 : 1),
-                liked: !img.liked,
-              }
-            : img
-        )
-      );
-
-      // ❌ Step 3.1: Rollback `selectedPicture` if API Fails
-      if (selectedPicture?.key === imageKey) {
-        setSelectedPicture((prev) =>
-          prev
-            ? {
-                ...prev,
-                likes: (prev.likes || 0) - (prev.liked ? -1 : 1),
-                liked: !prev.liked,
-              }
-            : null
-        );
-      }
-    }
-  }
-
-  async function handleCommentDelete(commentId: number, imageKey: string) {
-    try {
-      console.log("🚀 Deleting comment ID:", commentId);
-
-      // ✅ Optimistically update UI: Remove comment from `selectedPicture`
-      setSelectedPicture((prev) =>
-        prev
-          ? {
-              ...prev,
-              comments: prev.comments.filter(
-                (comment) => comment.id !== commentId
-              ),
-            }
-          : prev
-      );
-
-      // ✅ Also update `loadedImages` to remove the comment
-      setLoadedImages((prevImages) =>
-        prevImages.map((img) =>
-          img.key === imageKey
-            ? {
-                ...img,
-                comments: img.comments.filter(
-                  (comment) => comment.id !== commentId
-                ),
-              }
-            : img
-        )
-      );
-
-      // ✅ Step 2: Send DELETE request to backend
-      const response = await fetch(`${API_URL}/api/comment/${commentId}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete comment");
-      }
-
-      console.log("✅ Comment deleted successfully!");
-    } catch (error) {
-      console.error("🚨 Error deleting comment:", error);
-
-      // ❌ Rollback UI if API request fails
-      fetchImages(); // ✅ Re-fetch all images to restore the correct state
-    }
-  }
-
-  async function handleLikes(imageKey: string) {
-    if (!session) {
-      console.log("User is not logged in, opening login modal...");
-      setDisplayModalOpen(false);
-      setIsLoginModalOpen(true); // Show login modal if not logged in
-      return;
-    }
-
-    const userEmail = session.user?.email;
-    if (!userEmail) {
-      console.error("Error: Email is not available in the session.");
-      return;
-    }
-
-    // ✅ Step 1: Optimistically Update State (Update UI instantly)
-    setLoadedImages((prevImages) =>
-      prevImages.map((img) =>
-        img.key === imageKey
-          ? {
-              ...img,
-              likes: (img.likes || 0) + (img.liked ? -1 : 1),
-              liked: !img.liked,
-            }
-          : img
-      )
-    );
-
-    // ✅ Step 1.1: Also update the `selectedPicture` in modal
-    if (selectedPicture?.key === imageKey) {
-      setSelectedPicture((prev) =>
-        prev
-          ? {
-              ...prev,
-              likes: (prev.likes || 0) + (prev.liked ? -1 : 1),
-              liked: !prev.liked,
-            }
-          : null
-      );
-    }
-
-    try {
-      // ✅ Step 2: Send API Request to Update Backend
-      const response = await fetch(`${API_URL}/api/like`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userEmail, image_key: imageKey }),
-      });
-
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error("Like request failed");
-      }
-    } catch (error) {
-      console.error("Error updating like:", error);
-
-      // ❌ Step 3: Rollback UI if API Fails
-      setLoadedImages((prevImages) =>
-        prevImages.map((img) =>
-          img.key === imageKey
-            ? {
-                ...img,
-                likes: (img.likes || 0) + (img.liked ? -1 : 1),
-                liked: !img.liked,
-              }
-            : img
-        )
-      );
-
-      // ❌ Step 3.1: Rollback `selectedPicture` if API Fails
-      if (selectedPicture?.key === imageKey) {
-        setSelectedPicture((prev) =>
-          prev
-            ? {
-                ...prev,
-                likes: (prev.likes || 0) + (prev.liked ? -1 : 1),
-                liked: !prev.liked,
-              }
-            : null
-        );
-      }
-    }
-  }
-
   const fetchImages = async (userEmail?: string | null | undefined) => {
     try {
-      // const userEmail = session?.user?.email;
       const url = userEmail
         ? `${API_URL}/api/images?user_id=${encodeURIComponent(userEmail)}`
         : `${API_URL}/api/images`;
@@ -319,279 +54,313 @@ export default function Gallery() {
       const response = await fetch(url);
       const data = await response.json();
 
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      setLoadedImages([...data.data]); // Ensure a fresh state update
-
-      setTimeout(() => {}, 1000);
+      setLoadedImages([...data.data]);
     } catch (error) {
       console.error("Error fetching images:", error);
     }
   };
 
   useEffect(() => {
-    // setClientSession(session);
-    fetchImages(session?.user?.email || null);
-  }, [session]); // Runs whenever session updates
+    if (loadedImages.length === 0 && session !== undefined) {
+      fetchImages(session?.user?.email || null);
+    }
+  }, [session, loadedImages.length]);
 
-  //modal functions
-  const openModal = (img: ImageData) => {
+  const openModal = (index: number) => {
     const image = new Image();
-    image.src = img.url;
+    image.src = loadedImages[index].url;
     image.onload = () => {
-      setIsPortrait(image.height > image.width); // Check orientation
-      setSelectedPicture(img);
+      setIsPortrait(image.height > image.width);
+      setSelectedIndex(index);
       setDisplayModalOpen(true);
     };
   };
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setDisplayModalOpen(false);
-    setIsCommentBoxOpen(false);
-    setSelectedPicture(null);
-  };
+  }, []);
 
-  const openUploadMenu = () => {
-    if (
-      !(
-        loggedInUser == process.env.NEXT_PUBLIC_BOSS_EMAIL_1 ||
-        loggedInUser == process.env.NEXT_PUBLIC_BOSS_EMAIL_2
-      )
-    ) {
-      alert("Sorry Only BOSS is allowed to upload Images");
-      return;
-    }
-    setIsUploadModalOpen(true);
-  };
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeModal();
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [closeModal]);
 
-  const closeUploadMenu = () => {
-    setIsUploadModalOpen(false);
-  };
-
-  const handleComment = () => {
-    if (!session) {
-      console.log("User is not logged in, opening login modal...");
-      setDisplayModalOpen(false);
+  const handleSendComment = async (imageKey: string) => {
+    if (!newComment.trim()) return;
+    if (!loggedInUser) {
       setIsLoginModalOpen(true);
       return;
     }
-
-    const userEmail = session.user?.email;
-    if (!userEmail) {
-      console.error("Error: Email is not available in the session.");
-      return;
-    }
-    setIsCommentBoxOpen(true);
-  };
-  const handleDelete = async (fileKey: string) => {
-    if (!fileKey) {
-      console.error("File key is undefined. Cannot proceed with delete.");
-      alert("No file selected for deletion.");
-      return;
-    }
-
-    // Extract only the file name
-    const fileName = fileKey.split("/").pop(); // This removes "photos/" and keeps "DSC_1862.JPG"
-
-    setNewComment(""); // ✅ Clear input box
-    setIsCommentBoxOpen(false); // ✅ Close comment box
-
     try {
-      const response = await fetch(`${API_URL}/api/images/${fileName}`, {
+      const response = await fetch(`${API_URL}/api/comment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_email: loggedInUser,
+          comment: newComment,
+          image_key: imageKey,
+        }),
+      });
+      if (response.ok) {
+        await fetchImages(session?.user?.email || null);
+        setNewComment("");
+      }
+    } catch (error) {
+      console.error("Error sending comment:", error);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    try {
+      const response = await fetch(`${API_URL}/api/comment/${commentId}`, {
         method: "DELETE",
       });
-
-      if (!response.ok) {
-        throw new Error(`Failed to delete image: ${response.statusText}`);
+      if (response.ok) {
+        await fetchImages(session?.user?.email || null);
       }
-
-      alert("Photo deleted successfully!");
-      setLoadedImages(
-        (prevImages: ImageData[]) =>
-          prevImages.filter((img: ImageData) => img.key !== fileKey) //here
-      );
-      setDisplayModalOpen(false);
     } catch (error) {
-      console.error("Error deleting photo:", error);
-      alert("Failed to delete photo. Please try again.");
+      console.error("Error deleting comment:", error);
+    }
+  };
+
+  const handleLikeToggle = async (imageKey: string, isLiked: boolean) => {
+    if (!loggedInUser) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+    const endpoint = isLiked ? "/api/unlike" : "/api/like";
+    try {
+      const response = await fetch(`${API_URL}${endpoint}`, {
+        method: isLiked ? "DELETE" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: loggedInUser, image_key: imageKey }),
+      });
+      if (response.ok) {
+        await fetchImages(session?.user?.email || null);
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  };
+
+  const showPrev = () => {
+    setSelectedIndex((prev) =>
+      prev === 0 ? loadedImages.length - 1 : prev - 1
+    );
+  };
+
+  const showNext = () => {
+    setSelectedIndex((prev) =>
+      prev === loadedImages.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const selectedPicture = loadedImages[selectedIndex];
+
+  const bossEmails = [
+    process.env.NEXT_PUBLIC_BOSS_EMAIL_1,
+    process.env.NEXT_PUBLIC_BOSS_EMAIL_2,
+  ];
+
+  const isBoss =
+    session?.user?.email && bossEmails.includes(session.user.email);
+
+  const handleDeleteImage = async (imageKey: string) => {
+    if (!confirm("Are you sure you want to delete this photo?")) return;
+
+    const fileKey = imageKey.replace(/^photos\//, ""); // remove prefix
+
+    try {
+      const response = await fetch(`${API_URL}/api/images/${fileKey}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        await fetchImages(session?.user?.email || null);
+        setDisplayModalOpen(false);
+      }
+    } catch (error) {
+      console.error("Error deleting image:", error);
     }
   };
 
   return (
-    <div className="photo-gallery">
-      {loadedImages.length > 0 ? (
-        loadedImages.map((img: ImageData, index) => (
-          <div className="photo" key={index}>
-            <figure className="hover-effect">
-              <img
-                src={img.url}
-                onClick={() => openModal(img)}
-                alt={`Photo ${index + 1}`}
-              />
-              {/* {interactions.map(() => {})} */}
-              <figcaption className="interactions">
-                <span>
-                  <FontAwesomeIcon
-                    icon={faHeart}
-                    className={img.liked ? "liked-icon" : "unliked-icon"} // Change color based on liked status
-                  />{" "}
-                  {img.likes}
-                </span>
-                <span>
-                  <FontAwesomeIcon icon={faComment} />{" "}
-                  {img.comments ? img.comments.length : 0}
-                </span>
-              </figcaption>
-            </figure>
-          </div>
-        ))
-      ) : (
-        <p>Loading images...</p>
-      )}
-      {displayModalOpen && (
-        <div className="modal-overlay" onClick={closeModal}>
+    <div className="pt-20 px-4 bg-neutral-900 min-h-screen">
+      <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+        {loadedImages.map((img, index) => (
           <div
-            className={`display-modal ${isPortrait ? "portrait" : "landscape"}`}
+            key={index}
+            className="break-inside-avoid relative overflow-hidden rounded-lg shadow-md hover:shadow-xl cursor-pointer group"
+          >
+            <img
+              src={img.url}
+              alt={`Photo ${index + 1}`}
+              className="w-full h-auto object-cover rounded-lg transition-opacity duration-300"
+              onClick={() => openModal(index)}
+            />
+            <div className="absolute bottom-0 left-0 w-full bg-black/70 text-white px-3 py-2 text-sm flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <span
+                className="flex items-center gap-1 cursor-pointer"
+                onClick={() => handleLikeToggle(img.key, img.liked || false)}
+              >
+                <FontAwesomeIcon
+                  icon={faHeart}
+                  className={img.liked ? "text-red-500" : "text-white/50"}
+                />
+                {img.likes}
+              </span>
+              <span className="flex items-center gap-1">
+                <FontAwesomeIcon icon={faComment} />
+                {img.comments?.length || 0}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {isBoss ? (
+        <button
+          onClick={() => setIsUploadModalOpen(true)}
+          className="fixed bottom-5 right-5 w-14 h-14 rounded-full bg-white text-black text-3xl shadow-md flex items-center justify-center hover:bg-black hover:text-white transition-all"
+        >
+          <FontAwesomeIcon icon={faPlus} />
+        </button>
+      ) : (
+        <button
+          onClick={() => alert("Sorry, only Bosses are allowed to upload.")}
+          className="fixed bottom-5 right-5 w-14 h-14 rounded-full bg-white text-black text-3xl shadow-md flex items-center justify-center opacity-50 cursor-not-allowed"
+          title="Only bosses can upload"
+        >
+          <FontAwesomeIcon icon={faPlus} />
+        </button>
+      )}
+
+      {displayModalOpen && selectedPicture && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 px-2">
+          <div
+            className="absolute left-2 sm:left-5 text-white text-2xl cursor-pointer"
+            onClick={showPrev}
+          >
+            <FontAwesomeIcon icon={faArrowLeft} />
+          </div>
+          <div
+            className="relative bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-lg shadow-xl max-w-3xl w-full mx-4 overflow-y-auto max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Image Section */}
-            <img src={selectedPicture?.url} alt="Selected" />
-
-            {/* Interaction Section */}
-            <div
-              className={`interaction-section ${
-                isPortrait ? "portrait" : "landscape"
-              }`}
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-white"
+              onClick={closeModal}
             >
-              {/* <h2 className="picture-caption">
-                {selectedPicture?.title || " "}
-              </h2> */}
-              <div className="comments">
-                <p className="comments-title">Comments</p>
-                <ul
-                  className={`user-comments ${
-                    isPortrait ? "portrait" : "landscape"
-                  }`}
+              <FontAwesomeIcon icon={faTimes} size="lg" />
+            </button>
+            <img
+              src={selectedPicture.url}
+              alt={selectedPicture.title || "Image"}
+              className="rounded-lg max-h-[60vh] w-full object-contain mb-4"
+            />
+            <div className="text-white mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <p className="font-semibold">Likes: {selectedPicture.likes}</p>
+                <button
+                  className="text-red-500 hover:text-red-700"
+                  onClick={() =>
+                    handleLikeToggle(
+                      selectedPicture.key,
+                      selectedPicture.liked || false
+                    )
+                  }
                 >
-                  {selectedPicture?.comments &&
-                  selectedPicture.comments.length > 0 ? (
-                    selectedPicture.comments.map((comment, index) => (
-                      <li
-                        key={index}
-                        // className={
-                        //   isPortrait ? "comment-text" : "landscape-comment-text"
-                        // }
-                      >
-                        <strong>{comment.user.split("@")[0]}:</strong>{" "}
-                        {comment.comment}
-                        {comment.id !== undefined &&
-                          comment.user === loggedInUser && (
-                            <p
-                              className="comment-delete-btn"
-                              onClick={() =>
-                                handleCommentDelete(
-                                  comment.id as number,
-                                  selectedPicture.key
-                                )
-                              }
-                            >
-                              delete
-                            </p>
-                          )}
-                      </li>
-                    ))
-                  ) : (
-                    <li className="no-comments">No comments yet!</li>
-                  )}
-                </ul>
+                  <FontAwesomeIcon
+                    icon={faHeart}
+                    className={
+                      selectedPicture.liked ? "text-red-500" : "text-white/50"
+                    }
+                  />
+                </button>
               </div>
-              <div
-                className={`options ${isPortrait ? "portrait" : "landscape"}`}
-              >
-                <ul
-                  className={`like-delete ${
-                    isPortrait ? "portrait" : "landscape"
-                  }`}
+              <p className="mb-2 font-semibold">Comments:</p>
+              <ul className="space-y-3 max-h-40 overflow-y-auto">
+                {selectedPicture.comments.map((comment, idx) => (
+                  <li
+                    key={idx}
+                    className="bg-white/10 p-3 rounded-lg shadow text-sm border border-white/20 relative"
+                  >
+                    <p className="text-teal-300 font-semibold">
+                      {comment.user}
+                    </p>
+                    <p className="text-white mt-1">{comment.comment}</p>
+                    {comment.user === loggedInUser && (
+                      <button
+                        className="absolute top-2 right-2 text-red-400 hover:text-red-600"
+                        onClick={() => handleDeleteComment(comment.id)}
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="mt-4">
+              <textarea
+                className="w-full p-3 border rounded text-black focus:outline-none focus:ring focus:border-blue-500"
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Write a comment..."
+              />
+              <div className="flex justify-between items-center gap-2 mt-2">
+                {!loggedInUser && (
+                  <button
+                    className="text-blue-300 underline text-sm"
+                    onClick={() => signIn("google")}
+                  >
+                    Login to comment
+                  </button>
+                )}
+                <button
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  onClick={() => handleSendComment(selectedPicture.key)}
                 >
-                  {selectedPicture?.liked ? (
-                    <li
-                      onClick={() => handleUnlike(selectedPicture?.key || "")}
-                      className="likes"
-                    >
-                      {/* onClick={() => handleLikes(selectedPicture?.key || "")}> */}
-                      Unlike ({selectedPicture?.likes || 0})
-                    </li>
-                  ) : (
-                    <li
-                      onClick={() => handleLikes(selectedPicture?.key || "")}
-                      className="likes"
-                    >
-                      Like ({selectedPicture?.likes || 0})
-                    </li>
-                  )}
-                  <li onClick={handleComment}>Comment</li>
-                  {(loggedInUser === process.env.NEXT_PUBLIC_BOSS_EMAIL_1 ||
-                    loggedInUser === process.env.NEXT_PUBLIC_BOSS_EMAIL_2) && (
-                    <li
-                      onClick={() => handleDelete(selectedPicture?.key || "")}
-                    >
-                      {/* <FontAwesomeIcon icon={faTrash} />  */}
-                      Delete
-                    </li>
-                  )}
-                </ul>
+                  Send
+                </button>
+                {isBoss && (
+                  <button
+                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                    onClick={() => handleDeleteImage(selectedPicture.key)}
+                  >
+                    Delete Photo
+                  </button>
+                )}
               </div>
             </div>
+          </div>
+          <div
+            className="absolute right-2 sm:right-5 text-white text-2xl cursor-pointer"
+            onClick={showNext}
+          >
+            <FontAwesomeIcon icon={faArrowRight} />
           </div>
         </div>
       )}
 
       {isUploadModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <UploadMenu
-              // loadedImages={loadedImages}
-              // setLoadedImages={setLoadedImages}
-              fetchImages={fetchImages} // Pass fetchImages here
-              closeMenu={closeUploadMenu}
-            />
-          </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <UploadMenu
+            fetchImages={fetchImages}
+            closeMenu={() => setIsUploadModalOpen(false)}
+          />
         </div>
       )}
 
-      <div className="btn-parent">
-        <button className="add-btn fas fa-plus" onClick={openUploadMenu}>
-          <FontAwesomeIcon icon={faPlus} />
-        </button>
-      </div>
-
-      {/* Render Login Modal */}
       {isLoginModalOpen && (
         <LoginModal
           isOpen={isLoginModalOpen}
           onClose={() => setIsLoginModalOpen(false)}
         />
-      )}
-
-      {isCommentBoxOpen && (
-        <div className="comment-modal">
-          <textarea
-            className="comment-input"
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Write a comment..."
-          />
-          <div className="comment-buttons">
-            <button
-              onClick={() => handleSendComment(selectedPicture?.key || "")}
-            >
-              Send
-            </button>
-            <button onClick={() => setIsCommentBoxOpen(false)}>Cancel</button>
-          </div>
-        </div>
       )}
     </div>
   );

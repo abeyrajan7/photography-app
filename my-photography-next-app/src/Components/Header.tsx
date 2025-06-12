@@ -1,71 +1,117 @@
 "use client";
 
-import React from "react";
-import "./Header.css";
-import { useState } from "react";
+import React, { useState } from "react";
 import { FaBars } from "react-icons/fa";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 
 export default function Header() {
   const router = useRouter();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const { data: session } = useSession();
   const pathname = usePathname();
-  // const { data: session } = useSession();
-  // const API_URL = "http://localhost:3001";
-  const API_URL = "https://photography-app-azure.vercel.app";
-
-  async function saveUserEmail(email: string) {
-    console.log("here");
-    try {
-      const response = await fetch(`${API_URL}/api/saveUser`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-
-      if (!response.ok) throw new Error("Failed to store email in database");
-
-      console.log("✅ Email saved successfully:", email);
-    } catch (error) {
-      console.error("🚨 Error saving email:", error);
-    }
-  }
-
-  async function handleLogout() {
-    if (session?.user?.email) {
-      saveUserEmail(session.user.email); // ✅ Store email in Neon.ai
-    }
-    await signOut({ callbackUrl: "/" }); // Redirects user to home after logout
-  }
+  const { data: session } = useSession();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const API_URL = "http://localhost:3001";
 
   const handleNavigation = (path: string) => {
     router.push(path);
     setMenuOpen(false);
   };
 
+  async function saveUserEmail(email: string) {
+    try {
+      await fetch(`${API_URL}/api/saveUser`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+    } catch (error) {
+      console.error("Error saving email:", error);
+    }
+  }
+
+  async function handleLogout() {
+    if (session?.user?.email) saveUserEmail(session.user.email);
+    await signOut({ callbackUrl: "/" });
+  }
+
   return (
-    <div className="header-bar">
-      <h1 className="site-title">Frame Finder</h1>
-      <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
-        <FaBars size={24} />
+    <nav className="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-red-900 to-black text-white shadow-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-bold tracking-wide">Frame Finder</h1>
+          </div>
+
+          <div className="hidden md:flex gap-6 text-sm font-medium">
+            <button
+              onClick={() => handleNavigation("/gallery")}
+              className={`hover:text-green-400 transition-colors ${
+                pathname === "/gallery" ? "text-green-400" : ""
+              }`}
+            >
+              Photography
+            </button>
+
+            {!session && (
+              <button
+                onClick={() => handleNavigation("/login")}
+                className={`hover:text-green-400 transition-colors ${
+                  pathname === "/login" ? "text-green-400" : ""
+                }`}
+              >
+                Login
+              </button>
+            )}
+
+            {session && (
+              <button
+                onClick={handleLogout}
+                className="hover:text-red-400 transition-colors"
+              >
+                Logout
+              </button>
+            )}
+          </div>
+
+          <div className="md:hidden">
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="text-white hover:text-gray-300"
+            >
+              <FaBars size={20} />
+            </button>
+          </div>
+        </div>
       </div>
-      <ul className={`nav-items ${menuOpen ? "open" : ""}`}>
-        <li
-          onClick={() => handleNavigation("/about")}
-          className={pathname === "/about" ? "active-tab" : ""}
-        >
-          About
-        </li>
-        <li
-          onClick={() => handleNavigation("/gallery")}
-          className={pathname === "/gallery" ? "active-tab" : ""}
-        >
-          Photography
-        </li>
-        {session && <li onClick={() => handleLogout()}>Logout</li>}
-      </ul>
-    </div>
+
+      {menuOpen && (
+        <div className="md:hidden bg-black text-white px-4 py-2 space-y-2">
+          <button
+            onClick={() => handleNavigation("/gallery")}
+            className="block w-full text-left hover:text-green-400"
+          >
+            Photography
+          </button>
+
+          {!session && (
+            <button
+              onClick={() => handleNavigation("/login")}
+              className="block w-full text-left hover:text-green-400"
+            >
+              Login
+            </button>
+          )}
+
+          {session && (
+            <button
+              onClick={handleLogout}
+              className="block w-full text-left hover:text-red-400"
+            >
+              Logout
+            </button>
+          )}
+        </div>
+      )}
+    </nav>
   );
 }
