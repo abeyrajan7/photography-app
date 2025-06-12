@@ -8,7 +8,12 @@ const app = express();
 const port = 3001;
 const { Client, Pool } = require("pg");
 
-if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY || !process.env.AWS_BUCKET_NAME || !process.env.AWS_REGION) {
+if (
+  !process.env.AWS_ACCESS_KEY_ID ||
+  !process.env.AWS_SECRET_ACCESS_KEY ||
+  !process.env.AWS_BUCKET_NAME ||
+  !process.env.AWS_REGION
+) {
   console.error("🚨 Missing AWS credentials in environment variables");
   throw new Error("AWS credentials are not set in environment variables.");
 }
@@ -19,9 +24,8 @@ AWS.config.update({
   region: process.env.AWS_REGION || "ap-south-1",
 });
 
-// const storage = multer.memoryStorage(); 
+// const storage = multer.memoryStorage();
 // const upload = multer({ storage: storage });
-
 
 app.use(express.json());
 
@@ -33,7 +37,6 @@ const client = new Client({
 });
 client.connect();
 
-
 const s3Client = new S3Client({
   region: process.env.AWS_REGION || "ap-south-1",
   credentials: {
@@ -42,39 +45,13 @@ const s3Client = new S3Client({
   },
 });
 
-
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
 });
 
-
-
-// app.use((req, res, next) => {
-//   const origin = req.headers.origin;
-//   console.log(`🔍 Incoming request from: ${origin}`);
-
-//   if (allowedOrigins.includes(origin)) {
-//     console.log(`✅ Origin allowed: ${origin}`);
-//     res.setHeader("Access-Control-Allow-Origin", origin);
-//   } else {
-//     console.log(`❌ Origin not allowed: ${origin}`);
-//   }
-
-//   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-//   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-//   if (req.method === "OPTIONS") {
-//     console.log(`🚀 Handling preflight request for ${origin}`);
-//     return res.sendStatus(200);
-//   }
-
-//   next();
-// });
-
 pool.on("error", (err) => {
   console.error("Unexpected PostgreSQL pool error:", err);
-  
 });
 
 app.get("/", (req, res) => {
@@ -85,8 +62,7 @@ app.get("/", (req, res) => {
 app.get("/api/images", async (req, res) => {
   const bucketName = "framefinder-photography-abey"; // Your bucket name
   const prefix = "photos/"; // Folder prefix if images are stored in a folder
-  const user_id = req.query.user_id; 
-
+  const user_id = req.query.user_id;
 
   const params = {
     Bucket: bucketName,
@@ -102,29 +78,29 @@ app.get("/api/images", async (req, res) => {
       title: item.Key.split("/").pop(),
       key: item.Key,
       likes: 0, // Default likes count
-      liked: false, 
-      comments: []
+      liked: false,
+      comments: [],
     }));
     // Fetch like counts for all images
     const likeCountsResult = await pool.query(
       "SELECT post_url, COUNT(*) as like_count FROM likes GROUP BY post_url"
     );
 
-        // Fetch comments for all images
+    // Fetch comments for all images
     const commentsResult = await pool.query(
-        "SELECT id, image_key, user_email, comment FROM comments ORDER BY created_at DESC"
-      );
+      "SELECT id, image_key, user_email, comment FROM comments ORDER BY created_at DESC"
+    );
 
-      let commentsMap = {};
+    let commentsMap = {};
     commentsResult.rows.forEach((row) => {
-        if (!commentsMap[row.image_key]) {
-            commentsMap[row.image_key] = [];
-        }
-        commentsMap[row.image_key].push({
-            id: row.id,
-            user: row.user_email, // ✅ Store user email
-            comment: row.comment, // ✅ Store comment text
-        });
+      if (!commentsMap[row.image_key]) {
+        commentsMap[row.image_key] = [];
+      }
+      commentsMap[row.image_key].push({
+        id: row.id,
+        user: row.user_email, // ✅ Store user email
+        comment: row.comment, // ✅ Store comment text
+      });
     });
 
     // Convert database result to a map
@@ -136,13 +112,11 @@ app.get("/api/images", async (req, res) => {
     // Fetch user's liked images (if logged in)
     let likedImages = new Set();
     if (user_id) {
-    
       const likesResult = await pool.query(
         "SELECT post_url FROM likes WHERE user_id = $1",
         [user_id]
-      );    
+      );
       likedImages = new Set(likesResult.rows.map((row) => row.post_url));
-    
     }
     // Update images with like count and liked status
     images = images.map((img) => ({
@@ -152,15 +126,15 @@ app.get("/api/images", async (req, res) => {
       comments: commentsMap[img.key] || [],
     }));
 
-    
-    res.json({ success: true, message: "Fetched images with like counts & comments", data: images });
+    res.json({
+      success: true,
+      message: "Fetched images with like counts & comments",
+      data: images,
+    });
   } catch (error) {
     res.status(500).json({ error: "Database error" });
   }
 });
-
-
-
 
 // delete an image
 app.delete("/api/images/:fileKey", async (req, res) => {
@@ -201,7 +175,9 @@ app.delete("/api/unlike", async (req, res) => {
     const { user_id, image_key } = req.body; // Extract JSON body
 
     if (!user_id || !image_key) {
-      return res.status(400).json({ error: "Missing required fields: user_id or image_key" });
+      return res
+        .status(400)
+        .json({ error: "Missing required fields: user_id or image_key" });
     }
 
     // ✅ Remove the like from the database
@@ -211,7 +187,11 @@ app.delete("/api/unlike", async (req, res) => {
     );
 
     if (result.rowCount > 0) {
-      res.json({ success: true, message: "Unliked successfully", like: result.rows[0] });
+      res.json({
+        success: true,
+        message: "Unliked successfully",
+        like: result.rows[0],
+      });
     } else {
       res.status(400).json({ success: false, message: "Like not found" });
     }
@@ -221,25 +201,32 @@ app.delete("/api/unlike", async (req, res) => {
   }
 });
 
-
 //add a comment
 app.post("/api/comment", async (req, res) => {
   const { image_key, user_email, comment } = req.body;
   if (!image_key || !user_email || !comment) {
-    return res.status(400).json({ error: "Missing required fields: user_id or image_key" });
+    return res
+      .status(400)
+      .json({ error: "Missing required fields: user_id or image_key" });
   }
   try {
     const result = await client.query(
       `INSERT INTO comments (image_key, user_email, comment, created_at)
        VALUES ($1, $2, $3, NOW())
        RETURNING *;`,
-       [image_key, user_email, comment]
+      [image_key, user_email, comment]
     );
 
     if (result.rowCount > 0) {
-      res.json({ success: true, message: "commented successfully", like: result.rows[0] });
+      res.json({
+        success: true,
+        message: "commented successfully",
+        like: result.rows[0],
+      });
     } else {
-      res.status(400).json({ success: false, message: "User has already liked this image" });
+      res
+        .status(400)
+        .json({ success: false, message: "User has already liked this image" });
     }
   } catch (error) {
     console.error(error);
@@ -252,11 +239,15 @@ app.delete("/api/comment/:id", async (req, res) => {
   const commentId = req.params.id;
 
   try {
-
-    const result = await pool.query("DELETE FROM comments WHERE id = $1 RETURNING *", [commentId]);
+    const result = await pool.query(
+      "DELETE FROM comments WHERE id = $1 RETURNING *",
+      [commentId]
+    );
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ success: false, message: "Comment not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Comment not found" });
     }
 
     res.json({ success: true, message: "Comment deleted successfully" });
@@ -290,13 +281,14 @@ app.post("/api/saveUser", async (req, res) => {
   }
 });
 
-
 //like an image
 app.post("/api/like", async (req, res) => {
   const { user_id, image_key } = req.body; // Access JSON body
 
   if (!user_id || !image_key) {
-    return res.status(400).json({ error: "Missing required fields: user_id or image_key" });
+    return res
+      .status(400)
+      .json({ error: "Missing required fields: user_id or image_key" });
   }
 
   try {
@@ -309,9 +301,15 @@ app.post("/api/like", async (req, res) => {
     );
 
     if (result.rowCount > 0) {
-      res.json({ success: true, message: "Liked successfully", like: result.rows[0] });
+      res.json({
+        success: true,
+        message: "Liked successfully",
+        like: result.rows[0],
+      });
     } else {
-      res.status(400).json({ success: false, message: "User has already liked this image" });
+      res
+        .status(400)
+        .json({ success: false, message: "User has already liked this image" });
     }
   } catch (error) {
     console.error(error);
